@@ -1,9 +1,9 @@
 {
-  "name": "moodle-local_ari",
+  "name": "moodle-mod_openchat",
   "description": "",
   "version": "1.0.0",
   "author": "Niels Seidel <niels.seidel@fernuni-hagen.de",
-  "license": "MIT",
+  "license": "GPL-3.0-only",
   "private": true,
   "scripts": {
     "dev": "cross-env webpack --mode development --progress --hide-modules",
@@ -17,7 +17,6 @@
     "jsonpath": "^1.1.1",
     "jsonpath-plus": "^7.2.0",
     "nodemon": "^2.0.13",
-    "ollama": "^0.5.11",
     "vue": "^2.6.10",
     "vue-multiselect": "^2.1.7",
     "vue-router": "^3.0.5",

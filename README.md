@@ -11,7 +11,9 @@
 ## *OpenChat* is a Moodle activity plugin for chatting with open-source large language models.
 
 
-*openchat* (mod_openchat) is a ready to use Moodle activity plugin for serving videos loaded from a provided URL. user interactions with the video such as play, pause, seek, playbackspeed, and fullscreen are logged. Also the video playback is captured for every 2 seconds segment that has been played back completely. This fine-grained data collection enables detailed analytics of watching behavior and resource usage.
+*openchat* (mod_openchat) is a ready to use Moodle activity plugin that enables students to chat with an open-source large language model. Currently, the plugin communicats only with the API of OpenWebUI. Thus, all models available on OpenWebUI can be selected for chat communication. 
+
+In future, teachers should be able to define prompt templates that encapsulate student input requests. These encapsilations can be used to enrich the prompt with additional instructions or to instruct the LLM to withdraw certain information.  
 
 <!-- development-related badges -->
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/CATALPAresearch/mod_openchat/commit-activity)

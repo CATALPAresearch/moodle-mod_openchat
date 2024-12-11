@@ -3,10 +3,7 @@
     <h1>OpenChat</h1>
     <div id="chat">
       <div class="w-100">
-        <div v-for="m in messages" key="m">
-          <div v-if="m.author=='bot'" class="col chat-message text-end float-right" style="background-color:cornsilk;">{{ m.message }}</div>
-          <div v-if="m.author=='user'" class="col chat-message" style="background-color:azure;">{{ m.message }}</div>
-        </div>
+        <div v-for="m in messages" key="m" :class="m.author=='bot' ? 'chat-message ml-auto' : 'chat-message'" :style="m.author=='bot' ? 'background-color:azure;' : 'background-color:cornsilk;'">{{ m.message }}</div>
       </div>
       <div class="row w-100 chat-input">
         <input type="text" class="col-6" v-model="chat_message"  @keyup.enter="requestChat" placeholder="">
@@ -22,19 +19,14 @@ import store from "./store";
 
 export default Vue.extend({
   name: "OpenChat",
-
   data() {
     return {
       chat_message: '',
       messages: []
     };
   },
-  mounted: function () {
-    
-  },
-
+  mounted: function () {},
   store: store as any,
-
   methods: {
     //@ignore-ts
     requestChat: async function(){
@@ -93,22 +85,11 @@ export default Vue.extend({
             _this.messages[message_pos-1].message =  _this.messages[message_pos-1].message + res;
           }
         }
-
         console.log("Streaming complete.");
       } catch (error) {
         console.error("Error fetching streaming data:", error);
       }
     },
-    //...mapGetters(['getCourseId', 'getCourses']), // not working?
-    //...mapMutations(['setCourseId']),
-  },
-  computed: {
-    //...mapActions(['getAllCourses']),
-  },
-  filters: {
-    pretty: function(value) {
-      return JSON.stringify(JSON.parse(value), null, 2);
-    }
   },
 });
 </script>
@@ -136,9 +117,5 @@ export default Vue.extend({
   width:300px;
   border-radius: 2% 2%;
   border: solid 1px #555;
-}
-
-#content h3 {
-  margin-top: 40px;
 }
 </style>
