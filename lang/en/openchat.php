@@ -16,7 +16,7 @@ $string['confdescription'] = 'Hier ist die Beschreibung';
 $string['confvalue'] = 'SomeValue';
 
 
-$string['hostname'] = 'Hostname';
+$string['hostname'] = 'Host URL';
 $string['apikey'] = 'API Key';
 $string['model'] = 'LLM Model';
 $string['prompttemplate'] = 'Prompt Template (not implemented yet)';

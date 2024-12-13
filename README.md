@@ -10,8 +10,7 @@
 
 ## *OpenChat* is a Moodle activity plugin for chatting with open-source large language models.
 
-
-*openchat* (mod_openchat) is a ready to use Moodle activity plugin that enables students to chat with an open-source large language model. Currently, the plugin communicats only with the API of OpenWebUI. Thus, all models available on OpenWebUI can be selected for chat communication. 
+*openchat* (mod_openchat) is a ready to use Moodle activity plugin that enables students to chat with an open-source large language model. Currently, the plugin is only compatible with the API of OpenWebUI (former Ollame). Thus, all models available on OpenWebUI can be selected for chat communication. 
 
 In future, teachers should be able to define prompt templates that encapsulate student input requests. These encapsilations can be used to enrich the prompt with additional instructions or to instruct the LLM to withdraw certain information.  
 
@@ -81,18 +80,21 @@ Compliance
 
 ## Key Features
 
-* purely javascript-based interface to OpenWebUI
+* Server-side communication between PHP and OpenWebUI API. 
+* Customizable host url and API end points.
+* Definition of the proposed LLM model in the plugin settings
+* A purely javascript-based interface to OpenWebUI is also implemented. However, this is not recommended if API is secured by a key.
+* minimal user interface
 
 ## Roadmap and Limitations
 **Roadmap**
-* use settings like hostname, api key, prompttamplate in the plugin
 * support continuous chat sessions
-* UI redesign
-* remove unused code
-* test with ChatGPT
+* users should be able to select the LLM model
+* compatability with LLM servers other OpenWebUI (former Ollama), e.g. ChatGPT
+* binding to a RAG webservice
 
 **Limitations**
-- ...
+- quickly coded without much testing
 
 ## How To Use
 
@@ -124,11 +126,13 @@ $ php admin/cli/upgrade.php
 
 # Open a Moodle course of you choice and add openchat as an activity to your course.
 
+# Provide a host URL and API key of your OpenWebUI instance.
+
 ```
 
 ## Download
 
-You can [download](https://github.com/catalparesearch/mod_openchat/releases/tag/latest) the latest installable version of *openchat* for Moodle 3.11.
+You can [download](https://github.com/catalparesearch/mod_openchat/releases/tag/latest) the latest installable version of *openchat* for Moodle 3.11. or 4.x.
 
 ## Getting into Development
 Client-side code is located in the folder vue/. The file view.php contains the root DOM element of the video player. The webservice for accessing Moodle database can be found at db/external.php. 
