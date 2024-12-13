@@ -2,10 +2,8 @@
 
 require('../../config.php');
 require_once($CFG->dirroot.'/mod/openchat/lib.php');
-//require_once($CFG->dirroot.'/mod/openchat/locallib.php');
 require_once($CFG->libdir.'/completionlib.php');
 require_once("$CFG->libdir/formslib.php");
-//header("Access-Control-Allow-Origin: *");
 
 $id      = optional_param('id', 0, PARAM_INT); // Course Module ID
 $p       = optional_param('p', 0, PARAM_INT);  // Page instance ID
@@ -37,6 +35,8 @@ $PAGE->requires->js_call_amd('mod_openchat/app-lazy', 'initOpenChat',[
     $page->hostname,
     $page->model,
     $page->prompttemplate,
+    $id,
+    $p,
 ]);
 
 

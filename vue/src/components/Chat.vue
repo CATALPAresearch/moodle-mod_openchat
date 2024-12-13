@@ -31,7 +31,6 @@
 
 <script lang="ts">
 import Vue from "vue";
-//import store from "../store";
 import { mapGetters } from 'vuex'
 
 export default Vue.extend({
@@ -42,13 +41,15 @@ export default Vue.extend({
       messages: [],
     };
   },
-  mounted: function () {
-    //console.log(this.$store.getters.getModel)
-    
-  },
-  //store: store,
+  mounted: function () {},
   methods: {
-    ...mapGetters({ hostname: 'getHostname', model: 'getModel', prompttemplate: 'getPrompttemplate' }),
+    ...mapGetters({ 
+      hostname: 'getHostname', 
+      model: 'getModel', 
+      prompttemplate: 'getPrompttemplate',
+      coursemoduleid: 'getCourseModuleId', 
+      pageinstanceid: 'getPageInstanceId',
+    }),
     requestClientChat: async function () {
       let _this = this;
       let message = this.chat_message;
@@ -58,7 +59,7 @@ export default Vue.extend({
       //@ts-ignore
       let message_pos = this.messages.push({ author: "bot", message: "" });
 
-      const url = this.hostname();//"https://catalpa-llm.fernuni-hagen.de/ollama/api/generate"; // FIXME - chat
+      const url = this.hostname();
       const apiKey =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjczYmUyMGFiLWI4YjYtNDNmNS05YmZjLWIzMDU1OGZkODZiYyJ9.7QCdTgHAPVvTJgkbr7NLxYcO4iUTwlL4ai6rfw_neXE"; // Replace with your actual API key
       const payload = {
@@ -121,13 +122,14 @@ export default Vue.extend({
       let postData = new FormData();
       postData.append('model', this.model());
       postData.append('hostname', this.hostname());
+      postData.append('coursemoduleid', this.coursemoduleid());
+      postData.append('pageinstanceid', this.pageinstanceid());
       postData.append('prompt', message);
-
+      
       try {
-        const response = await fetch("http://localhost/moodle413/mod/openchat/llmstream.php", {
+        const response = await fetch(M.cfg.wwwroot + "/mod/openchat/llmstream.php", {
           method: "POST",
-          //headers: { "Content-Type": "application/json",},
-          body: postData, //JSON.stringify({model: "llama3.1",prompt: message,}),
+          body: postData,
         });
 
         if (!response.body) {
@@ -160,18 +162,6 @@ export default Vue.extend({
         console.error("Error fetching streaming data:", error);
       }
     },
-  },
-  computed: {
-    /*
-   hostname() {
-      return this.$store.getters.getHostname;
-    },
-    model() {
-      return this.$store.getters.getModel;
-    },
-    prompttemplate() {
-      return this.$store.getters.getPrompttemplate;
-    },*/
   },
 });
 </script>

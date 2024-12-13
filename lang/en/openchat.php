@@ -14,3 +14,10 @@ $string['unknown_error'] = 'unknown error';
 $string['confentry'] = 'SomeConfig';
 $string['confdescription'] = 'Hier ist die Beschreibung';
 $string['confvalue'] = 'SomeValue';
+
+
+$string['hostname'] = 'Hostname';
+$string['apikey'] = 'API Key';
+$string['model'] = 'LLM Model';
+$string['prompttemplate'] = 'Prompt Template (not implemented yet)';
+
