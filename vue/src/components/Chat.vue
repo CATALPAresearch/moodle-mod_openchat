@@ -1,6 +1,5 @@
 <template>
-  <div id="content">
-    <h1>OpenChat</h1>
+  <div id="container" class="content">
     <div id="chat">
       <div class="w-100">
         <div v-for="m in messages" key="m" :class="m.author=='bot' ? 'chat-message ml-auto' : 'chat-message'" :style="m.author=='bot' ? 'background-color:azure;' : 'background-color:cornsilk;'">{{ m.message }}</div>
@@ -95,6 +94,11 @@ export default Vue.extend({
 </script>
 
 <style scoped>
+.content{
+  border: none;
+  max-width: 830px;
+  margin: 0 auto;
+}
 #chat {
   display: block;
   width: 500px;
