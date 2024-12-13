@@ -20,10 +20,10 @@
           type="text"
           class="col-6"
           v-model="chat_message"
-          @keyup.enter="requestChat"
+          @keyup.enter="requestServerChat"
           placeholder=""
         />
-        <button class="btn btn-primary col-2" @click="requestChat">send</button>
+        <button class="btn btn-primary col-2" @click="requestServerChat">send</button>
       </div>
     </div>
   </div>
@@ -45,7 +45,7 @@ export default Vue.extend({
   store: store as any,
   methods: {
     //@ignore-ts
-    requestChat: async function () {
+    requestClientChat: async function () {
       let _this = this;
       let message = this.chat_message;
       this.chat_message = ""; // reset input field
@@ -53,8 +53,8 @@ export default Vue.extend({
       this.messages.push({ author: "user", message: message });
       //@ts-ignore
       let message_pos = this.messages.push({ author: "bot", message: "" });
-      
-      const url = "https://catalpa-llm.fernuni-hagen.de/ollama/api/generate";
+
+      const url = "https://catalpa-llm.fernuni-hagen.de/ollama/api/generate"; // FIXME - chat
       const apiKey =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjczYmUyMGFiLWI4YjYtNDNmNS05YmZjLWIzMDU1OGZkODZiYyJ9.7QCdTgHAPVvTJgkbr7NLxYcO4iUTwlL4ai6rfw_neXE"; // Replace with your actual API key
       const payload = {
@@ -97,8 +97,58 @@ export default Vue.extend({
               res = "";
             }
             //@ts-ignore
-            _this.messages[message_pos - 1].message =
-              _this.messages[message_pos - 1].message + res;
+            _this.messages[message_pos - 1].message = _this.messages[message_pos - 1].message + res;
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching streaming data:", error);
+      }
+    },
+    requestServerChat: async function () {
+      let _this = this;
+      //@ts-ignore
+      let message = this.chat_message;
+      this.chat_message = ""; // reset input field
+      //@ts-ignore
+      this.messages.push({ author: "user", message: message });
+      //@ts-ignore
+      let message_pos = this.messages.push({ author: "bot", message: "" });
+
+      let postData = new FormData();
+      postData.append('model', "llama3.1");
+      postData.append('prompt', message);
+
+      try {
+        const response = await fetch("http://localhost/moodle413/mod/openchat/llmstream.php", {
+          method: "POST",
+          //headers: { "Content-Type": "application/json",},
+          body: postData, //JSON.stringify({model: "llama3.1",prompt: message,}),
+        });
+
+        if (!response.body) {
+          throw new Error(
+            "ReadableStream is not supported in this environment."
+          );
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let done = false;
+
+        while (!done) {
+          const { value, done: streamDone } = await reader.read();
+          done = streamDone;
+          if (value) {
+            const chunk = decoder.decode(value, { stream: true });
+            let res = "";
+            try {
+              res = JSON.parse(chunk).response;
+            } catch (e) {
+              res = "";
+            }
+            //@ts-ignore
+            _this.messages[message_pos - 1].message = _this.messages[message_pos - 1].message + res;
+            //outputElement.textContent += chunk; // Append data to the output element
           }
         }
       } catch (error) {

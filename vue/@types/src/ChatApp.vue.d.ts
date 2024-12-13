@@ -4,7 +4,8 @@ declare const _default: import("vue").DefineComponent<{}, {
         chat_message: string;
         messages: never[];
     }, {
-        requestChat: () => Promise<void>;
+        requestClientChat: () => Promise<void>;
+        requestServerChat: () => Promise<void>;
     }, unknown, Record<never, any>, {}, import("vue/types/v3-component-options").ComponentOptionsMixin, import("vue/types/v3-component-options").ComponentOptionsMixin>;
 }, {}, {}, {}, import("vue/types/v3-component-options").ComponentOptionsMixin, import("vue/types/v3-component-options").ComponentOptionsMixin, {}, string, Readonly<import("vue").ExtractPropTypes<{}>>, {}>;
 export default _default;

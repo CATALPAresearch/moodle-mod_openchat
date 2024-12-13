@@ -3,7 +3,8 @@ declare const _default: import("vue/types/vue").ExtendedVue<Vue<Record<string, a
     chat_message: string;
     messages: never[];
 }, {
-    requestChat: () => Promise<void>;
+    requestClientChat: () => Promise<void>;
+    requestServerChat: () => Promise<void>;
 }, unknown, Record<never, any>, {}, import("vue/types/v3-component-options").ComponentOptionsMixin, import("vue/types/v3-component-options").ComponentOptionsMixin>;
 export default _default;
 //# sourceMappingURL=../../../@maps/src/components/Chat.vue.d.ts.map
