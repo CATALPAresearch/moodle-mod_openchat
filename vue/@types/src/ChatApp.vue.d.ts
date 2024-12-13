@@ -6,6 +6,9 @@ declare const _default: import("vue").DefineComponent<{}, {
     }, {
         requestClientChat: () => Promise<void>;
         requestServerChat: () => Promise<void>;
+        hostname: import("vuex").Computed;
+        model: import("vuex").Computed;
+        prompttemplate: import("vuex").Computed;
     }, unknown, Record<never, any>, {}, import("vue/types/v3-component-options").ComponentOptionsMixin, import("vue/types/v3-component-options").ComponentOptionsMixin>;
 }, {}, {}, {}, import("vue/types/v3-component-options").ComponentOptionsMixin, import("vue/types/v3-component-options").ComponentOptionsMixin, {}, string, Readonly<import("vue").ExtractPropTypes<{}>>, {}>;
 export default _default;

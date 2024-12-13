@@ -33,12 +33,15 @@ require_capability('mod/openchat:view', $context);
 
 echo $OUTPUT->header();
 
-$PAGE->requires->js_call_amd('mod_openchat/app-lazy', 'initOpenChat');
+$PAGE->requires->js_call_amd('mod_openchat/app-lazy', 'initOpenChat',[
+    $page->hostname,
+    $page->model,
+    $page->prompttemplate,
+]);
 
 
 echo <<<'EOT'
 <div id="OpenChatApp"></div>
 EOT;
-
 echo $OUTPUT->footer($course);
 

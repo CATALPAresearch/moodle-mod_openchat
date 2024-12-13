@@ -9,7 +9,7 @@ const FileManagerPlugin = require('filemanager-webpack-plugin');
 module.exports = (env, options) => {
 
     exports = {
-        entry: './src/main.ts',
+        entry: './src/main.js',
         output: {
             path: path.resolve(__dirname, '../amd/build'),
             publicPath: '/dist/',
@@ -39,7 +39,7 @@ module.exports = (env, options) => {
                     loader: 'babel-loader',
                     exclude: /node_modules/
                 },
-                {
+                /*{
                     test: /\.tsx?$/,
                     loader: "ts-loader",
                     exclude: /node_modules/,
@@ -47,7 +47,7 @@ module.exports = (env, options) => {
                         // Tell to ts-loader: if you check .vue file extension, handle it like a ts file
                         appendTsSuffixTo: [/\.vue$/]
                     }
-                }
+                }*/
             ]
         },
         resolve: {
