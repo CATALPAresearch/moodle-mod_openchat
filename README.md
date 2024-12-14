@@ -29,9 +29,7 @@
 <!-- Maturity-related badges 
 see: https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md
 -->
-[![stability-mature](https://img.shields.io/badge/stability-mature-008000.svg)](https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md#mature)
-![](https://img.shields.io/badge/years_in_productive_use-0-red)
-![](https://img.shields.io/badge/used_in_unique_courses-0-red)
+[![stability-alpha](https://img.shields.io/badge/stability-alpha-f4d03f.svg)](https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md#alpha)
 
 
 
