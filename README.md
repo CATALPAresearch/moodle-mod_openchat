@@ -14,10 +14,10 @@
  
 
 <!-- development-related badges -->
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/CATALPAresearch/mod_openchat/commit-activity)
-[![github latest commit](https://badgen.net/github/last-commit/CATALPAresearch/mod_openchat)](https://github.com/CATALPAresearch/mod_openchat/commit/)
-[![github contributors](https://badgen.net/github/contributors/CATALPAresearch/mod_openchat)](https://github.com/CATALPAresearch/mod_openchat/contributors/)
-[![github issues](https://img.shields.io/github/issues/CATALPAresearch/mod_openchat.svg)](https://github.com/CATALPAresearch/mod_openchat/issues/)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/CATALPAresearch/moodle-mod_openchat/commit-activity)
+[![github latest commit](https://badgen.net/github/last-commit/CATALPAresearch/moodle-mod_openchat)](https://github.com/CATALPAresearch/mod_openchat/commit/)
+[![github contributors](https://badgen.net/github/contributors/CATALPAresearch/moodle-mod_openchat)](https://github.com/CATALPAresearch/mod_openchat/contributors/)
+[![github issues](https://img.shields.io/github/issues/CATALPAresearch/moodle-mod_openchat.svg)](https://github.com/CATALPAresearch/moodle-mod_openchat/issues/)
 [![GPLv3 license](https://img.shields.io/badge/License-GPLv3-green.svg)](http://perso.crans.org/besson/LICENSE.html)
 
 ![https://img.shields.io/badge/any_text-you_like-blue](https://img.shields.io/badge/Tested_Moodle_versions-3.5_to_3.11-green)
@@ -107,10 +107,10 @@ To clone and run this application, you'll need [Git](https://git-scm.com) and [N
 ```bash
 # Clone this repository
 1. Clone  the repository to /your-moodle/mod/
-$ git clone git@github.com:catalparesearch/mod_openchat.git
+$ git clone git@github.com:catalparesearch/moodle-mod_openchat.git
 
 # Rename the folder to 'openchat'
-$ mv mod_openchat openchat
+$ mv moodle-mod_openchat openchat
 
 # Go into the repository
 $ cd openchat
@@ -136,7 +136,7 @@ $ php admin/cli/upgrade.php
 
 ## Download
 
-You can [download](https://github.com/catalparesearch/mod_openchat/releases/tag/latest) the latest installable version of *openchat* for Moodle 3.11. or 4.x.
+You can [download](https://github.com/catalparesearch/moodle-mod_openchat/releases/tag/latest) the latest installable version of *openchat* for Moodle 3.11. or 4.x.
 
 ## Getting into Development
 Client-side code is located in the folder vue/. The file view.php contains the root DOM element of the video player. The webservice for accessing Moodle database can be found at db/external.php. 
