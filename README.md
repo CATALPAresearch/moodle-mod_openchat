@@ -10,9 +10,8 @@
 
 ## *OpenChat* is a Moodle activity plugin for chatting with open-source large language models.
 
-*openchat* (mod_openchat) is a ready to use Moodle activity plugin that enables students to chat with an open-source large language model. Currently, the plugin is only compatible with the API of OpenWebUI (former Ollame). Thus, all models available on OpenWebUI can be selected for chat communication. 
-
-In future, teachers should be able to define prompt templates that encapsulate student input requests. These encapsilations can be used to enrich the prompt with additional instructions or to instruct the LLM to withdraw certain information.  
+*openchat* (mod_openchat) is a ready to use Moodle activity plugin that enables students to chat with an open-source large language model. Currently, the plugin is compatible with the API of OpenWebUI (former Ollama). Thus, all models available for OpenWebUI can be selected by the teacher for chat communication of students. 
+ 
 
 <!-- development-related badges -->
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/CATALPAresearch/mod_openchat/commit-activity)
@@ -80,18 +79,23 @@ Compliance
 
 ## Key Features
 
-* Server-side communication between PHP and OpenWebUI API. 
-* Customizable host url and API end points.
-* Definition of the proposed LLM model in the plugin settings
-* A purely javascript-based interface to OpenWebUI is also implemented. However, this is not recommended if API is secured by a key.
+* server-side communication between PHP and OpenWebUI API. 
+* customizable host url, API end points, and API key.
+* definition of the proposed LLM model in the plugin settings
 * minimal user interface
+* (optional) A purely javascript-based interface to OpenWebUI. However, this is not recommended if API is secured by an API key.
+
 
 ## Roadmap and Limitations
 **Roadmap**
+* In future, teachers should be able to define prompt templates that encapsulate student LLM requests. These encapsilations can be used to enrich the prompt with additional instructions or to instruct the LLM to withdraw certain information. 
+* add further language strings and its translations 
 * support continuous chat sessions
-* users should be able to select the LLM model
-* compatability with LLM servers other OpenWebUI (former Ollama), e.g. ChatGPT
+* making LLm model selectable by the user (student)
+* UI redesign
 * binding to a RAG webservice
+* log user interactions, optional als the text input
+* compatability with LLM servers other then OpenWebUI, e.g. ChatGPT
 
 **Limitations**
 - quickly coded without much testing
@@ -154,7 +158,15 @@ tba
 
 ## Citation
 
-...
+```
+@misc{Seidel2024-OpenChat,
+author = {Seidel, Niels},
+doi = {},
+title = {{OpenChat - Moodle activity plugin for LLM chats with OpenWebUI}},
+url = {https://github.com/CATALPAresearch/moodle-mod{\_}openchat},
+year = {2024}
+}
+```
 
 ## You may also like ...
 
