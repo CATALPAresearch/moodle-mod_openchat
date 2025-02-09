@@ -152,7 +152,7 @@ This software uses the following open source packages:
 
 ## Related
 
-tba
+* [https://moodle.org/plugins/block_openai_chat](block_openai_chat)
 
 ## Citation
 

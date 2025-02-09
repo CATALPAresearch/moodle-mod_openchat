@@ -16,6 +16,14 @@ $hostname = $_POST['hostname'];
 $id = $_POST['coursemoduleid'];
 $p = $_POST['pageinstanceid'];
 
+/*
+$model = $_GET['model'];
+$prompt = $_GET['prompt'];
+$hostname = $_GET['hostname'];
+$id = $_GET['coursemoduleid'];
+$p = $_GET['pageinstanceid'];
+*/
+
 if ($p) {
     if (!$page = $DB->get_record('openchat', array('id' => $p))) {
         print_error('invalidaccessparameter', 'error', $CFG->wwwroot);
@@ -27,13 +35,14 @@ if ($p) {
     }
     $page = $DB->get_record('openchat', array('id' => $cm->instance), '*', MUST_EXIST);
 }
-
 $apiKey = $page->apikey;
+
+
 
 $ch = curl_init($hostname);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Content-Type: application/json',
-    'Authorization: Bearer ' . $apiKey,
+    'Content-Type: application/json'//,
+    //'Authorization: Bearer ' . $apiKey,
 ]);
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
