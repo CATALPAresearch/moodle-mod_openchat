@@ -1,60 +1,80 @@
 <template>
     <div id="container" class="content">
-        <div class="w100">
-            <h3 class="d-flex justify-content-between* align-items-center*">
+        <div class="chat-header mb-3 w100">
+            <h3 class="d-flex justify-content-between* align-items-center* mb-3">
                 Dokumentan Chat
-                <i class="fa fa-cog ml-3 mt-1" style="font-size:0.8em; color:#555;" @click="show_settings=!show_settings"></i>
+                <i class="fa fa-cog ml-3 mt-1 settings-icon" style="font-size:0.8em; color:#555;"
+                    @click="show_settings = !show_settings"></i>
             </h3>
-        </div>
-        <div v-if="show_settings" class="settings">
-            <span v-if="documents.length > 0" class="bold">Ausgewählte Dokumente</span>
-            <table v-if="documents.length > 0" class="document-table">
-                <thead>
-                <tr>
-                    <th>Auswahl</th>
-                    <th>Dokument</th>
-                    <th>Aktivitätstyp</th>
-                    <th>Aktionen</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="doc in documents" :key="doc.id">
-                    <td>
-                    <input type="checkbox" v-model="doc.selected" />
-                    </td>
-                    <td>{{ doc.file.name }}</td>
-                    <td>{{ doc.activity_type }}</td>
-                    <td>
-                    <i class="fa fa-trash delete-icon" @click="removeDocument(doc.id)"></i>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-            
-            <div class="mt-3">
-                <RAGupload @document_uploaded="addDocument"></RAGupload>
-                <span style="background-color: red;">{{ error_msg }}</span>
-            </div>
-            <div>
-                Ressource aus dem Kurs als Dokument hinzufügen;
-                [todo: page, longpage, wiki, forum, assign]
-            </div>
-        </div>
-        
-        <div id="chat" class="chat">
-            <div class="w-100">
-                <div v-for="m in messages" key="m" :class="m.author == 'bot' ? 'chat-message ml-auto' : 'chat-message'"
-                    :style="m.author == 'bot'
-                            ? 'background-color:azure;'
-                            : 'background-color:cornsilk;'
-                        ">
-                    {{ m.message }}
+
+            <div v-if="show_settings" class="settings mb-3">
+                <h3>Einstellungen</h3>
+                <span v-if="documents.length > 0" class="bold">Ausgewählte Dokumente</span>
+                <table v-if="documents.length > 0" class="document-table">
+                    <thead>
+                        <tr>
+                            <th>Auswahl</th>
+                            <th>Dokument</th>
+                            <th>Aktivitätstyp</th>
+                            <th>Aktionen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="doc in documents" :key="doc.id">
+                            <td>
+                                <input type="checkbox" v-model="doc.selected" />
+                            </td>
+                            <td>{{ doc.file.name }}</td>
+                            <td>{{ doc.activity_type }}</td>
+                            <td>
+                                <i class="fa fa-trash delete-icon" @click="removeDocument(doc.id)"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="mt-3">
+                    <RAGupload @document_uploaded="addDocument"></RAGupload>
+                    <span style="background-color: red;">{{ error_msg }}</span>
+                </div>
+                <div hidden class="mt-3">
+                    TODO: Ressource aus dem Kurs als Dokument hinzufügen;
+                    [todo: page, longpage, wiki, forum, assign]
                 </div>
             </div>
-            <div class="row w-100 chat-input">
-                <input type="text" class="col-6" v-model="chat_message" @keyup.enter="requestServerChat"
-                    placeholder="" />
-                <button class="btn btn-primary col-2" @click="requestServerChat">send</button>
+        </div>
+        <div id="chat" class="chat">
+            <div class="w-100">
+                <div v-for="m in messages" key="m" :class="m.author == 'bot' ? 'message-bot' : 'message--human'">
+                    <div :class="m.author == 'bot' ? 'chat-message ml-auto user-bot' : 'chat-message user-human'">
+                        <i v-if="m.message.length == 0" class="fa fa-spinner fa-spin"></i>
+                        <div v-html="m.message"></div>
+                    </div>
+                    <div v-if="m.author == 'bot' && m.message.length > 0" class="message-actions">
+                        <i class="fa fa-copy"></i>
+                        <i class="fa fa-thumb-up"></i>
+                        <i class="fa fa-thumb-down"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="w-100 chat-input">
+                <div>
+                    <textarea 
+                        ref="chatTextarea"
+                        class="w100 chat-textarea" 
+                        v-model="chat_message" 
+                        @keyup.enter="handleEnter"
+                        @input="resizeTextarea"
+                        placeholder="" 
+                        />
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <i class="fa fa-dots"></i>
+                        <button class="btn btn-primary" @click="requestDocumentChat" :disabled="chat_message.length == 0">
+                            <i class="fa fa-arrow-up"></i>
+                        </button>
+                    </div>
+                    
+                </div>
             </div>
         </div>
     </div>
@@ -84,13 +104,24 @@ export default Vue.extend({
     methods: {
         ...mapGetters({
             rag_webservice_host: 'getRAGWebserviceHost',
-            hostname: 'getHostname', 
-            model: 'getModel', 
+            hostname: 'getHostname',
+            model: 'getModel',
             prompttemplate: 'getPrompttemplate',
             coursemoduleid: 'getCourseModuleId',
             pageinstanceid: 'getPageInstanceId',
         }),
-        requestClientChat: async function () {
+        handleEnter(event) {
+            if (event.shiftKey) {
+            return; // Do nothing if Shift + Enter is pressed
+            }
+            this.requestDocumentChat(); // Fire event only when Enter is pressed alone
+        },
+        resizeTextarea: function() {
+            const textarea = this.$refs.chatTextarea;
+            textarea.style.height = "auto";  // Reset height
+            textarea.style.height = textarea.scrollHeight + "px"; // Set height dynamically
+        },
+        requestDocumentChat: async function () {
             let _this = this;
             let message = this.chat_message;
             this.chat_message = ""; // reset input field
@@ -100,14 +131,14 @@ export default Vue.extend({
             let message_pos = this.messages.push({ author: "bot", message: "" });
 
             // default
-            let url = "http://localhost/llm/query";//this.hostname();
+            let url = "http://localhost:5000/llm/query_documents";//this.hostname();
             let payload = {
-                "model": this.model(),//"llama3.1",
+                //"model": this.model(),//"llama3.1",
+                "filter": [],
                 "prompt": message,
             };
-            const apiKey =
-                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjczYmUyMGFiLWI4YjYtNDNmNS05YmZjLWIzMDU1OGZkODZiYyJ9.7QCdTgHAPVvTJgkbr7NLxYcO4iUTwlL4ai6rfw_neXE"; // Replace with your actual API key
-            
+            const apiKey = ""; // Replace with your actual API key
+
 
             try {
                 // send request
@@ -115,11 +146,11 @@ export default Vue.extend({
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        Authorization: "Bearer " + apiKey,
+                        //Authorization: "Bearer " + apiKey,
                     },
                     body: JSON.stringify(payload),
                 });
-                console.log(response);    
+                console.log(response);
                 if (!response.ok) {
                     throw new Error("HTTP error! Status:" + response.status);
                 }
@@ -151,9 +182,9 @@ export default Vue.extend({
                 console.error("Error fetching streaming data:", error);
             }
         },
-        addDocument: function(response){
+        addDocument: function (response) {
             console.log('handle adddocument', response)
-            if(response.error){
+            if (response.error) {
                 this.error_msg = response.msg;
                 return;
             }
@@ -166,52 +197,55 @@ export default Vue.extend({
                 selected: 'selected',
             });
         },
-        removeDocument: function(activity_id){
+        removeDocument: function (activity_id) {
             this.documents = this.documents.filter(doc => doc.id !== activity_id);
         },
-        updateDocumentFilter: function(){
+        updateDocumentFilter: function () {
             let activities = [];
             let document_types = this.documents.filter(); // todo
-            for(let dtype in document_types){
-                if(activities[dtype] == null){
+            for (let dtype in document_types) {
+                if (activities[dtype] == null) {
                     activities[dtype] = []
                 }
-                for(let doc in this.documents){
-                    if(doc.activity_type == dtype){
+                for (let doc in this.documents) {
+                    if (doc.activity_type == dtype) {
                         activities[dtype].push(doc.activity_id);
                     }
-                    
+
                 }
             }
             this.document_filter = {
                 'system': ['aple-demo-moodle'], // FixMe: this.moodle
                 'courses': [0], // FixMe: this.course_id
             }
-            for(let a in activities){
+            for (let a in activities) {
                 this.document_filter[a] = activities[a];
             }
             console.log(this.document_filter)
             return this.document_filter;
         },
-        requestServerChat: async function () {
+        requestDocumentChat_old: async function () {
             let _this = this;
+            if (this.chat_message.length == 0) {
+                return;
+            }
             //@ts-ignore
-            let message = this.chat_message;
-            this.chat_message = ""; // reset input field
-            //@ts-ignore
-            this.messages.push({ author: "user", message: message });
+            this.messages.push({ author: "user", message: this.chat_message });
             //@ts-ignore
             let message_pos = this.messages.push({ author: "bot", message: "" });
 
             let postData = new FormData();
             postData.append('model', this.model());
-            postData.append('hostname', "http://localhost/llm/query_documents");//this.hostname());
+            postData.append('prompt', this.chat_message);
             postData.append('document_index', this.document_index);
             postData.append('filter', this.document_filter);
+            postData.append('hostname', "http://localhost:5000/llm/query_documents");//this.hostname());
+
+
             postData.append('coursemoduleid', this.coursemoduleid());
             postData.append('pageinstanceid', this.pageinstanceid());
-            postData.append('prompt', message);
 
+            this.chat_message = ""; // reset input field
             try {
                 const response = await fetch(M.cfg.wwwroot + "/mod/openchat/llm_rag_stream.php", {
                     method: "POST",
@@ -223,7 +257,8 @@ export default Vue.extend({
                         "ReadableStream is not supported in this environment."
                     );
                 }
-
+                console.log(response.body)
+                console.log(response)
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder("utf-8");
                 let done = false;
@@ -247,6 +282,7 @@ export default Vue.extend({
             } catch (error) {
                 console.error("Error fetching streaming data:", error);
             }
+
         },
     },
 });
@@ -259,26 +295,38 @@ export default Vue.extend({
     margin: 0 auto;
 }
 
-.content .settings{
+.content .settings {
+    display: block;
+    width: 500px;
+    background-color: #eee;
+    padding: 10px 4px 4px 4px;
+    border-radius: 3px;
+}
+
+.content .settings h3 {
+    font-size: 1.3em;
+}
+
+.content .chat {
     display: block;
     width: 500px;
 }
 
-.content .chat{
-    display: block;
-    width: 500px;
-}
-
-#chat input {
-    font-size: 1.1em;
+#chat .chat-textarea {
+  min-height: 40px; /* Minimum height */
+  max-height: 300px; /* Limit maximum height */
+  overflow-y: auto; /* Allow scrolling for long content */
+  width: 100%;
+  resize: none; /* Disable manual resizing */
+  font-size: 1.1em;
     padding: 2px;
     margin-right: 2px;
 }
 
+
 #chat .chat-input {
-    margin-top: 30px;
+    margin-top: 2px;
     padding-top: 10px;
-    border-top: #222222 1px solid;
 }
 
 #chat .chat-message {
@@ -286,36 +334,54 @@ export default Vue.extend({
     padding: 8px 10px;
     font-size: 1.1em;
     margin-bottom: 5px;
-    width: 300px;
-    border-radius: 2% 2%;
-    border: solid 1px #555;
+    width: 500px;
 }
 
 .document-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
 }
 
 .document-table th,
 .document-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left;
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
 }
 
 .document-table th {
-  background-color: #f4f4f4;
+    background-color: #f4f4f4;
 }
 
 .delete-icon {
-  color: #555;
-  cursor: pointer;
+    color: #555;
+    cursor: pointer;
 }
 
 .delete-icon:hover {
-  color: red;
+    color: red;
 }
 
+.user-bot {
+    background-color: #fff;
+}
 
+.user-human {
+    background-color: #c2c9d6;
+    border-color: 0 solid #e3e3e3;
+}
+
+.message-actions {
+    display: none;
+}
+
+.message-bot:hover .message-actions {
+    display: block;
+}
+
+.settings-icon:hover{
+    color:blue;
+    cursor:pointer;
+}
 </style>
