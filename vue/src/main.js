@@ -1,5 +1,6 @@
 import Vue from "vue";
 import { store } from "./store.js";
+import router from './router';
 import ChatApp from "./ChatApp.vue";
 
 function initOpenChat(
@@ -18,6 +19,7 @@ function initOpenChat(
   new Vue({
     el: "#OpenChatApp",
     store,
+    router,
     render: (h) => h(ChatApp),
   });
 }

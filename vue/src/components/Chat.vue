@@ -1,5 +1,5 @@
 <template>
-  <div id="container" class="content">
+  <div id="container" class="content menu">
     <div id="chat">
       <div class="w-100">
         <div
@@ -127,7 +127,7 @@ export default Vue.extend({
       postData.append('prompt', message);
       
       try {
-        const response = await fetch(M.cfg.wwwroot + "/mod/openchat/llmstream.php", {
+        const response = await fetch(M.cfg.wwwroot + "/mod/openchat/llm_rag_stream.php", {
           method: "POST",
           body: postData,
         });
@@ -172,7 +172,7 @@ export default Vue.extend({
   max-width: 830px;
   margin: 0 auto;
 }
-#chat {
+.menu {
   display: block;
   width: 500px;
 }

@@ -6,6 +6,7 @@ Vue.use(Vuex);
 export const store = new Vuex.Store({
   state: {
     hostname: "",
+    ragWebserviceHost: "",
     model: "",
     prompttemplate: "",
     courseModuleId: "",
@@ -14,6 +15,9 @@ export const store = new Vuex.Store({
   mutations: {
     setHostname(state, name) {
       state.hostname = name;
+    },
+    setRAGWebserviceHost(state, name){
+      state.ragWebserviceHost = name;
     },
     setModel(state, name) {
       state.model = name;
@@ -31,6 +35,9 @@ export const store = new Vuex.Store({
   getters: {
     getHostname: function (state) {
       return state.hostname;
+    },
+    getRAGWebserviceHost: function(state){
+      return state.ragWebserviceHost
     },
     getModel: function (state) {
       return state.model;

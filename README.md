@@ -86,12 +86,16 @@ Compliance
 
 ## Roadmap and Limitations
 **Roadmap**
-* In future, teachers should be able to define prompt templates that encapsulate student LLM requests. These encapsilations can be used to enrich the prompt with additional instructions or to instruct the LLM to withdraw certain information. 
-* add further language strings and its translations 
-* support continuous chat sessions
-* making LLm model selectable by the user (student)
-* UI redesign
 * binding to a RAG webservice
+  * proof of concept
+  * add to settings
+* support continuous chat sessions => endpoint /chat
+* making LLM model selectable by the user (student)
+* In future, teachers should be able to define prompt templates that encapsulate student LLM requests. These encapsilations can be used to enrich the prompt with additional instructions or to instruct the LLM to withdraw certain information. 
+* UI redesign
+
+nth
+* add further language strings and its translations 
 * log user interactions, optional als the text input
 * compatability with LLM servers other then OpenWebUI, e.g. ChatGPT
 
