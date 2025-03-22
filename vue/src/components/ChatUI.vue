@@ -8,7 +8,7 @@
                     <div v-if="m.author == 'bot' && m.message.length > 0" class="message-actions">
                         <font-awesome-icon v-if="!copied" @click="copyMessageToClipboard(m.message)" icon="copy" />
                         <font-awesome-icon v-if="copied" icon="check" />
-                        <font-awesome-icon icon="thumbs-up" @click="sendRating('up', m.message)" />
+                        <font-awesome-icon icon="thumbs-up" @click="sendRating('up', index)" />
                         <font-awesome-icon icon="thumbs-down" @click="sendRating('down', index)" />
                     </div>
                 </div>
