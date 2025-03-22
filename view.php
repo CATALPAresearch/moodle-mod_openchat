@@ -50,8 +50,9 @@ echo html_writer::div('', 'OpenChatApp', ['id' => 'OpenChatApp']);
 echo $OUTPUT->footer($course);
 
 // Logging
+/*
 \mod_openchat\event\course_module_viewed::create([
     'objectid' => $page->id,
     'context' => $context,
 ])->trigger();
-
+*/
