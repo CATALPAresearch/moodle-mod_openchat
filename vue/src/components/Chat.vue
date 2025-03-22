@@ -43,13 +43,7 @@ export default Vue.extend({
   },
   mounted: function () {},
   methods: {
-    ...mapGetters({ 
-      hostname: 'getHostname', 
-      model: 'getModel', 
-      prompttemplate: 'getPrompttemplate',
-      coursemoduleid: 'getCourseModuleId', 
-      pageinstanceid: 'getPageInstanceId',
-    }),
+    
     requestClientChat: async function () {
       let _this = this;
       let message = this.chat_message;
@@ -59,11 +53,11 @@ export default Vue.extend({
       //@ts-ignore
       let message_pos = this.messages.push({ author: "bot", message: "" });
 
-      const url = this.hostname();
+      const url = this.pluginSettings.hostname;
       const apiKey =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjczYmUyMGFiLWI4YjYtNDNmNS05YmZjLWIzMDU1OGZkODZiYyJ9.7QCdTgHAPVvTJgkbr7NLxYcO4iUTwlL4ai6rfw_neXE"; // Replace with your actual API key
       const payload = {
-        model: this.model(),//"llama3.1",
+        model: this.pluginSettings.model,//"llama3.1",
         prompt: message,
       };
 
@@ -120,14 +114,15 @@ export default Vue.extend({
       let message_pos = this.messages.push({ author: "bot", message: "" });
 
       let postData = new FormData();
-      postData.append('model', this.model());
-      postData.append('hostname', this.hostname());
-      postData.append('coursemoduleid', this.coursemoduleid());
-      postData.append('pageinstanceid', this.pageinstanceid());
+      postData.append('model', this.pluginSettings.model);
+      postData.append('hostname', this.pluginSettings.hostname);
       postData.append('prompt', message);
+      //postData.append('coursemoduleid', this.courseModuleID);
+      //postData.append('pageinstanceid', this.pageInstanceId);
+      
       
       try {
-        const response = await fetch(M.cfg.wwwroot + "/mod/openchat/llm_rag_stream.php", {
+        const response = await fetch(M.cfg.wwwroot + "/mod/openchat/llm_stream.php", {
           method: "POST",
           body: postData,
         });
@@ -163,6 +158,13 @@ export default Vue.extend({
       }
     },
   },
+  computed: {
+    ...mapGetters({ 
+      pluginSettings: 'getPluginSettings',
+      pageinstanceid: 'getPageInstanceId',
+      coursemoduleid: 'getCourseModuleId', 
+    }),
+  }
 });
 </script>
 

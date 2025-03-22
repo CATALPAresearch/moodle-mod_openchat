@@ -3,6 +3,10 @@
 
 <img src="pix/openchat.png" width="500" />
 
+
+
+curl -X POST http://localhost/moodle413/mod/openchat/llm_stream.php -d "model=phi3:latest" -d "prompt=Hello world"  -d "hostname=http://localhost:11434/api/generate"
+
 </div>
 
 <br>

@@ -1,26 +1,45 @@
 <?php
 
+/**
+ *
+ * @package    mod_openchat
+ * @copyright  2021 Marc Burchart <marc.burchart@fernuni-hagen.de> , Kooperative Systeme, FernUniversität Hagen
+ * 
+ */
+
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Upgrade code for mod_openchat.
+ *
+ * @param int $oldversion the version we are upgrading from.
+ */
 function xmldb_openchat_upgrade($oldversion = 0) {
     global $CFG, $DB;
     $dbman = $DB->get_manager();
+    $time = time();
 
-    $newversion = 2022100114;
-    if ($oldversion < $newversion) {
+    // https://wimski.org/api/3.8/de/dd9/classdatabase__manager.html
 
-        // Define field id to be added to longpage_reading_progress.
-        $table = new xmldb_table('openchat_log');
-        $field1 = new xmldb_field('duration', XMLDB_TYPE_INTEGER, '10', null, null, null, null, null);
+    /**
+     * 
+     * ===================================================================
+     * 
+     *  openchat
+     * 
+     * ===================================================================
+     * 
+     */
 
-        // Conditionally launch add field id.
-        if (!$dbman->field_exists($table, $field1)) {
-            $dbman->add_field($table, $field1);
-        }
+    $table = new xmldb_table('openchat');
+    if($dbman->table_exists($table)){
+        $time = time();        
         
-        // Longpage savepoint reached.
-        upgrade_plugin_savepoint(true,  $newversion, 'mod', 'openchat');
+        // Grouping corrction because of MySQL compatability
+        //$field = new xmldb_field('grouping', XMLDB_TYPE_INTEGER, '10');
+        //if($dbman->field_exists($table,$field)){$dbman->rename_field($table, $field, 'studentgrouping');}
     }
+    
 
     return true;
 }
