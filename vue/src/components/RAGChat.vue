@@ -7,41 +7,14 @@
                     @click="show_settings = !show_settings"></i>
             </h3>
 
-            <div v-if="show_settings" class="settings mb-3">
-                <h3>Einstellungen</h3>
-                <span v-if="documents.length > 0" class="bold">Ausgewählte Dokumente</span>
-                <table v-if="documents.length > 0" class="document-table">
-                    <thead>
-                        <tr>
-                            <th>Auswahl</th>
-                            <th>Dokument</th>
-                            <th>Aktivitätstyp</th>
-                            <th>Aktionen</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="doc in documents" :key="doc.id">
-                            <td>
-                                <input type="checkbox" v-model="doc.selected" />
-                            </td>
-                            <td>{{ doc.file.name }}</td>
-                            <td>{{ doc.activity_type }}</td>
-                            <td>
-                                <i class="fa fa-trash delete-icon" @click="removeDocument(doc.id)"></i>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <RAGChatSettings 
+                v-if="show_settings" 
+                @init-data="init" 
+                @setSimulationData="setSimulationData"
+                :documents="documents" 
+                @update-graph-params="updateGraphParams" 
+                />
 
-                <div class="mt-3">
-                    <RAGupload @document_uploaded="addDocument"></RAGupload>
-                    <span style="background-color: red;">{{ error_msg }}</span>
-                </div>
-                <div hidden class="mt-3">
-                    TODO: Ressource aus dem Kurs als Dokument hinzufügen;
-                    [todo: page, longpage, wiki, forum, assign]
-                </div>
-            </div>
         </div>
         <div id="chat" class="chat">
             <div class="w-100">
@@ -83,12 +56,12 @@
 <script lang="ts">
 import Vue from "vue";
 import { mapGetters } from 'vuex'
-import RAGupload from "./RAGupload.vue";
+import RAGChatSettings from "./RAGChatSettings.vue";
 
 export default Vue.extend({
     name: "OpenChat",
     components: {
-        RAGupload: RAGupload
+        RAGChatSettings: RAGChatSettings
     },
     data() {
         return {
@@ -104,11 +77,7 @@ export default Vue.extend({
     methods: {
         ...mapGetters({
             rag_webservice_host: 'getRAGWebserviceHost',
-            hostname: 'getHostname',
-            model: 'getModel',
-            prompttemplate: 'getPrompttemplate',
-            coursemoduleid: 'getCourseModuleId',
-            pageinstanceid: 'getPageInstanceId',
+            pluginSettings: 'getPluginSettings',
         }),
         handleEnter(event) {
             if (event.shiftKey) {
@@ -138,7 +107,6 @@ export default Vue.extend({
                 "prompt": message,
             };
             const apiKey = ""; // Replace with your actual API key
-
 
             try {
                 // send request
@@ -182,24 +150,7 @@ export default Vue.extend({
                 console.error("Error fetching streaming data:", error);
             }
         },
-        addDocument: function (response) {
-            console.log('handle adddocument', response)
-            if (response.error) {
-                this.error_msg = response.msg;
-                return;
-            }
-            this.document_index = response.document_index;
-            this.documents.push({
-                file: response.file,
-                activity_type: response.activity_type,
-                activity_id: response.activity_id,
-                document_index: response.document_index, // needed? FixMe
-                selected: 'selected',
-            });
-        },
-        removeDocument: function (activity_id) {
-            this.documents = this.documents.filter(doc => doc.id !== activity_id);
-        },
+        
         updateDocumentFilter: function () {
             let activities = [];
             let document_types = this.documents.filter(); // todo
@@ -295,17 +246,7 @@ export default Vue.extend({
     margin: 0 auto;
 }
 
-.content .settings {
-    display: block;
-    width: 500px;
-    background-color: #eee;
-    padding: 10px 4px 4px 4px;
-    border-radius: 3px;
-}
 
-.content .settings h3 {
-    font-size: 1.3em;
-}
 
 .content .chat {
     display: block;
@@ -337,31 +278,6 @@ export default Vue.extend({
     width: 500px;
 }
 
-.document-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-
-.document-table th,
-.document-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
-
-.document-table th {
-    background-color: #f4f4f4;
-}
-
-.delete-icon {
-    color: #555;
-    cursor: pointer;
-}
-
-.delete-icon:hover {
-    color: red;
-}
 
 .user-bot {
     background-color: #fff;
