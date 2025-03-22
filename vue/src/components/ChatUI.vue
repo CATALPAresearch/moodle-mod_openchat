@@ -1,15 +1,15 @@
 <template>
     <div id="chat">
         <div class="w-100">
-            <div v-for="m in messages" key="m" :class="m.author == 'bot' ? 'message-bot' : 'message--human'">
+            <div v-for="index, m in messages" key="m" :class="m.author == 'bot' ? 'message-bot' : 'message--human'">
                 <div :class="m.author == 'bot' ? 'chat-message ml-auto user-bot' : 'chat-message user-human'">
                     <i v-if="m.message.length == 0" class="fa fa-spinner fa-spin"></i>
                     <div v-html="m.message"></div>
                     <div v-if="m.author == 'bot' && m.message.length > 0" class="message-actions">
                         <font-awesome-icon v-if="!copied" @click="copyMessageToClipboard(m.message)" icon="copy" />
                         <font-awesome-icon v-if="copied" icon="check" />
-                        <font-awesome-icon icon="thumbs-up" />
-                        <font-awesome-icon icon="thumbs-down" />
+                        <font-awesome-icon icon="thumbs-up" @click="sendRating('up', m.message)" />
+                        <font-awesome-icon icon="thumbs-down" @click="sendRating('down', index)" />
                     </div>
                 </div>
             </div>
@@ -27,7 +27,6 @@
 
             </div>
         </div>
-    </div>
     </div>
 </template>
 
@@ -50,13 +49,12 @@ export default Vue.extend({
     mounted: function () { },
     methods: {
         ...mapGetters({
-            rag_webservice_host: 'getRAGWebserviceHost',
+            //rag_webservice_host: 'getRAGWebserviceHost',
         }),
         handleEnter(event) {
             if (event.shiftKey) {
-                return; // Do nothing if Shift + Enter is pressed
+                return;
             }
-            // Fire event only when Enter is pressed alone
             this.handleChatMessage();
         },
         handleChatMessage: function () {
@@ -68,7 +66,7 @@ export default Vue.extend({
             textarea.style.height = "auto";  // Reset height
             textarea.style.height = textarea.scrollHeight + "px"; // Set height dynamically
         },
-        copyMessageToClipboard(text) {
+        copyMessageToClipboard: function (text) {
             //const el = this.$refs.copyTarget;
             //const text = el.innerText || el.textContent;
 
@@ -78,6 +76,14 @@ export default Vue.extend({
             }).catch(err => {
                 console.error('Failed to copy:', err);
             });
+        },
+        sendRating: function (rating, message_index) {
+            let params = {
+                request: this.messages[message_index - 1],
+                response: this.messages[message_index],
+                rating: rating,
+            };
+            // TODO
         }
     },
 });
@@ -141,7 +147,7 @@ export default Vue.extend({
 }
 
 .message-actions *:hover {
-    background-color: #bdc1c9;
+    background-color: #dadde4;
 }
 
 .message-bot:hover .message-actions * {
