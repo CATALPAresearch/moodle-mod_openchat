@@ -3,6 +3,11 @@ import { store } from "./store.js";
 import router from './router';
 import ChatApp from "./ChatApp.vue";
 
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faCopy, faCog, faThumbsDown, faThumbsUp, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+
+
 function initOpenChat(
   course_module_id,
   contextid,
@@ -19,6 +24,11 @@ function initOpenChat(
   store.commit("setContextID", contextid);    
   store.dispatch("loadModels");
   store.dispatch("loadPluginSettings");
+
+
+  library.add(faCopy, faCog, faThumbsDown, faThumbsUp, faCheck);
+
+  Vue.component('font-awesome-icon', FontAwesomeIcon);
 
   new Vue({
     el: "#OpenChatApp",
