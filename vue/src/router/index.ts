@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Chat from '../components/Chat.vue';
+import LLMChat from '../components/LLMChat.vue';
 import RAGChat from '../components/RAGChat.vue';
 import SRLChat from '../components/SRLChat.vue';
 
@@ -10,7 +10,7 @@ const routes = [
   { path: '/', redirect: '/srl-chat' }, // Default route
   { path: '/srl-chat', component: SRLChat },
   { path: '/rag-chat', component: RAGChat },
-  { path: '/chat', component: Chat }
+  { path: '/llm-chat', component: LLMChat }
 ];
 
 // FixMe: add moodle path to routes

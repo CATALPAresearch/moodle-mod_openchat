@@ -1,9 +1,9 @@
 <template>
   <div>
     <nav class="content mb-3">
-      <router-link to="/chat" class="tab" active-class="active">General Chat</router-link>
-      <router-link to="/rag-chat" class="tab" active-class="active">RAG Chat</router-link>
-      <router-link to="/srl-chat" class="tab" active-class="active">SRL Interview</router-link>
+      <router-link to="/llm-chat" class="tab" active-class="active">LLM-Chat</router-link>
+      <router-link to="/rag-chat" class="tab" active-class="active">RAG-Chat</router-link>
+      <router-link to="/srl-chat" class="tab" active-class="active">SRL-Interview</router-link>
     </nav>
     <router-view></router-view>
   </div>

@@ -1,53 +1,35 @@
 <template>
-  <div id="container" class="content menu">
-    <div id="chat">
-      <div class="w-100">
-        <div
-          v-for="m in messages"
-          key="m"
-          :class="m.author == 'bot' ? 'chat-message ml-auto' : 'chat-message'"
-          :style="
-            m.author == 'bot'
-              ? 'background-color:azure;'
-              : 'background-color:cornsilk;'
-          "
-        >
-          {{ m.message }}
-        </div>
-      </div>
-      <div class="row w-100 chat-input">
-        <input
-          type="text"
-          class="col-6"
-          v-model="chat_message"
-          @keyup.enter="requestServerChat"
-          placeholder=""
-        />
-        <button class="btn btn-primary col-2" @click="requestServerChat">send</button>
-      </div>
+  <div id="container" class="content">
+    <div class="chat-header mb-3 w100">
+      <h3 class="d-flex justify-content-between* align-items-center* mb-3">
+        LLM-Chat
+      </h3>
     </div>
+
+    <ChatUI :messages="messages" @requestChatResponse="requestServerChat" />
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import { mapGetters } from 'vuex'
+import ChatUI from "./ChatUI.vue";
 
 export default Vue.extend({
-  name: "OpenChat",
+  name: "LLMChat",
+  components: {
+    ChatUI: ChatUI
+  },
   data() {
     return {
-      chat_message: "",
       messages: [],
     };
   },
-  mounted: function () {},
+  mounted: function () { },
   methods: {
-    
-    requestClientChat: async function () {
+
+    requestClientChat: async function (message) {
       let _this = this;
-      let message = this.chat_message;
-      this.chat_message = ""; // reset input field
       //@ts-ignore
       this.messages.push({ author: "user", message: message });
       //@ts-ignore
@@ -103,11 +85,8 @@ export default Vue.extend({
         console.error("Error fetching streaming data:", error);
       }
     },
-    requestServerChat: async function () {
+    requestServerChat: async function (message) {
       let _this = this;
-      //@ts-ignore
-      let message = this.chat_message;
-      this.chat_message = ""; // reset input field
       //@ts-ignore
       this.messages.push({ author: "user", message: message });
       //@ts-ignore
@@ -119,8 +98,8 @@ export default Vue.extend({
       postData.append('prompt', message);
       //postData.append('coursemoduleid', this.courseModuleID);
       //postData.append('pageinstanceid', this.pageInstanceId);
-      
-      
+
+
       try {
         const response = await fetch(M.cfg.wwwroot + "/mod/openchat/llm_stream.php", {
           method: "POST",
@@ -159,10 +138,10 @@ export default Vue.extend({
     },
   },
   computed: {
-    ...mapGetters({ 
+    ...mapGetters({
       pluginSettings: 'getPluginSettings',
       pageinstanceid: 'getPageInstanceId',
-      coursemoduleid: 'getCourseModuleId', 
+      coursemoduleid: 'getCourseModuleId',
     }),
   }
 });
@@ -174,20 +153,24 @@ export default Vue.extend({
   max-width: 830px;
   margin: 0 auto;
 }
+
 .menu {
   display: block;
   width: 500px;
 }
+
 #chat input {
   font-size: 1.1em;
   padding: 2px;
   margin-right: 2px;
 }
+
 #chat .chat-input {
   margin-top: 30px;
   padding-top: 10px;
   border-top: #222222 1px solid;
 }
+
 #chat .chat-message {
   display: block;
   padding: 8px 10px;
