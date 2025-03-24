@@ -23,6 +23,16 @@ $functions = array(
         'loginrequired' => true
     ),
 
+    'mod_openchat_preference' => array(
+        'classname'   => 'mod_openchat_preference',
+        'methodname'  => 'preference',
+        'classpath'   => 'mod/openchat/ws/preference.php',
+        'description' => 'Get plugin preference.',
+        'type'        => 'write',
+        'ajax'        => true,
+        'loginrequired' => true
+    ),
+
     'mod_openchat_logging' => array(
         'classname'   => 'mod_openchat_external',
         'methodname'  => 'logging',

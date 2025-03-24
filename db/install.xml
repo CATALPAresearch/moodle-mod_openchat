@@ -11,6 +11,7 @@
                 <FIELD NAME="hostname" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="apikey" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="model" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="chatmodus" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="prompttemplate" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>

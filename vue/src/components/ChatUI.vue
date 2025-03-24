@@ -17,7 +17,7 @@
         <div class="w-100 chat-input">
             <div>
                 <textarea ref="chatTextarea" class="w100 chat-textarea" v-model="chat_message"
-                    @keyup.enter="handleEnter" @input="resizeTextarea" placeholder="" />
+                    @keyup.enter="handleEnter" @input="resizeTextarea" placeholder="Frag etwas" />
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <i class="fa fa-dots"></i>
                     <button class="btn btn-primary" @click="handleChatMessage" :disabled="chat_message.length == 0">

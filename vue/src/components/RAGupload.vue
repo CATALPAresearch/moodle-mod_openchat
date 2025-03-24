@@ -6,9 +6,9 @@
                 <span v-if="selectedFile">{{ selectedFile.name }}</span>
             </div>
             <div style="display: table-cell;">
-                <span v-if="!isProcessing" :class="{'btn btn-primary': selectedFile==null, 'btn btn-light': selectedFile!=null}">PDF auswählen</span>
-                <input v-if="!isProcessing" class="btn btn-primary" title="Bl" type="file" @change="handleFileUpload" accept="application/pdf" />
-                <span v-if="selectedFile && !isProcessing" class="btn btn-primary" @click="sendToWebService">PDF hochladen</span>
+                <span v-if="!isProcessing" :class="{'btn btn-primary btn-sm': selectedFile==null, 'btn btn-light btn-sm': selectedFile!=null}">PDF auswählen</span>
+                <input v-if="!isProcessing" class="btn btn-primary btn-sm" title="Bl" type="file" @change="handleFileUpload" accept="application/pdf" />
+                <span v-if="selectedFile && !isProcessing" class="btn btn-primary btn-sm" @click="sendToWebService">PDF hochladen</span>
             </div>
         </label>
         <div v-if="debug && webServiceResponse">

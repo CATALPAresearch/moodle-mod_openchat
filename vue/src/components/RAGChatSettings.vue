@@ -1,40 +1,66 @@
 <template>
     <div class="settings mb-3">
         <h3>Einstellungen</h3>
-        <span v-if="documents.length > 0" class="bold">Ausgewählte Dokumente</span>
-        <table v-if="documents.length > 0" class="document-table">
-            <thead>
-                <tr>
-                    <th>Auswahl</th>
-                    <th>Dokument</th>
-                    <th>Aktivitätstyp</th>
-                    <th>Aktionen</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="doc in documents" :key="doc.id">
-                    <td>
-                        <input type="checkbox" v-model="doc.selected" />
-                    </td>
-                    <td>{{ doc.file.name }}</td>
-                    <td>{{ doc.activity_type }}</td>
-                    <td>
-                        <i class="fa fa-trash delete-icon" @click="removeDocument(doc.id)"></i>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-        <div class="mt-3">
-            <RAGupload @document_uploaded="addDocument"></RAGupload>
-            <span style="background-color: red">{{ error_msg }}</span>
-        </div>
-        <div hidden class="mt-3">
-            TODO: Ressource aus dem Kurs als Dokument hinzufügen; [todo: page,
-            longpage, wiki, forum, assign]
-        </div>
+        
+        <!-- Chat modus -->
         <div class="form-group">
-            <label for="llmSelect">Wähle LLM aus:</label>
+            <h4>Chat-Modus:</h4>
+            <div>
+            <label>
+                <input type="radio" value="llm-chat" v-model="chatmodus" @change="updateChatModus" />
+                LLM-Chat (Standard)
+            </label>
+            <label>
+                <input type="radio" value="document-chat" v-model="chatmodus" @change="updateChatModus" />
+                Dokumenten-Chat
+            </label>
+            <label>
+                <input type="radio" value="srl-chat" v-model="chatmodus" @change="updateChatModus" />
+                SRL-Chat als Interview-Agent
+            </label>
+            </div>
+        </div>
+        
+        <!-- Settings for the document chat (RAG) -->
+        <div v-if="chatmodus == 'document-chat'">
+            <h4>Dokumente für Dokumenten-Chat</h4>
+            <span v-if="documents.length > 0" class="bold">Ausgewählte Dokumente</span>
+            <table v-if="documents.length > 0" class="document-table">
+                <thead>
+                    <tr>
+                        <th>Auswahl</th>
+                        <th>Dokument</th>
+                        <th>Aktivitätstyp</th>
+                        <th>Aktionen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="doc in documents" :key="doc.id">
+                        <td>
+                            <input type="checkbox" v-model="doc.selected" />
+                        </td>
+                        <td>{{ doc.file.name }}</td>
+                        <td>{{ doc.activity_type }}</td>
+                        <td>
+                            <i class="fa fa-trash delete-icon" @click="removeDocument(doc.id)"></i>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="mt-3">
+                <RAGupload @document_uploaded="addDocument"></RAGupload>
+                <span style="background-color: red">{{ error_msg }}</span>
+            </div>
+            <div hidden class="mt-3">
+                TODO: Ressource aus dem Kurs als Dokument hinzufügen; [todo: page,
+                longpage, wiki, forum, assign]
+            </div>
+        </div>
+        
+        <!-- Standard settings for all chat modi -->
+        <div class="form-group">
+            <h4 for="llmSelect">Auswahl des Sprachmodels</h4>
             <select id="llmSelect" class="form-control w50" v-model="model" @change="updateModel">
                 <option disabled value="">-- Bitte wählen --</option>
                 <option v-for="(m, index) in $store.getters.getLLMModelList" :key="m" :value="m">
@@ -47,6 +73,8 @@
 
 <script>
 import RAGupload from "./RAGupload.vue";
+import { mapGetters } from 'vuex'
+
 export default {
     name: "RAGChatSettings",
     components: {
@@ -60,8 +88,10 @@ export default {
     },
     created: function () {
         this.model = this.$store.getters.getModel;
-        console.log("mounted moddel", this.model);
+        this.chatmodus = this.$store.getters.getChatModus;
+        console.log('this.chatmodus', this.chatmodus)
     },
+    
     methods: {
         addDocument: function (response) {
             console.log("handle adddocument", response);
@@ -81,6 +111,10 @@ export default {
         removeDocument: function (activity_id) {
             this.documents = this.documents.filter((doc) => doc.id !== activity_id);
         },
+        updateChatModus: function(){
+            this.$store.commit("setChatModus", this.chatmodus);
+            this.$store.dispatch("updatePluginSettings");
+        },
         updateModel: function () {
             this.$store.commit("setModel", this.model);
             this.$store.dispatch("updatePluginSettings");
@@ -88,6 +122,14 @@ export default {
     },
 
     computed: {
+        chatmodus: {
+            get() {
+                return this.$store.state.pluginSettings.chatmodus;
+            },
+            set(value) {
+                this.$store.commit("setChatModus", value);
+            },
+        },
         model: {
             get() {
                 return this.$store.state.pluginSettings.model;
@@ -110,6 +152,10 @@ export default {
 
 .settings h3 {
     font-size: 1.3em;
+}
+
+.settings h4 {
+    font-size: 1.1em;
 }
 
 .document-table {

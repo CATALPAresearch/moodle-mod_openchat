@@ -17,6 +17,7 @@ export const store = new Vuex.Store({
       hostname: null,
       model: null,
       prompttemplate: null,
+      chatmodus: null,
     },
     informedConsentAgreement: false,
     courseModuleID: null,
@@ -37,6 +38,7 @@ export const store = new Vuex.Store({
       state.pluginSettings.model = settings.model;
       state.pluginSettings.prompttemplate = settings.prompttemplate;
       state.pluginSettings.courseModuleID = settings.courseModuleID;
+      state.pluginSettings.chatmodus = settings.chatmodus;
       this.dispatch("loadModelNames");
       //console.log('storr', state.getters.pluginSettings.model)
     },
@@ -59,17 +61,22 @@ export const store = new Vuex.Store({
       state.pageInstanceId = name;
     },
     setInformedConsentAgreement: function(state, value){
-      console.log('set pref')
       state.informedConsentAgreement = value;
       this.dispatch("updatePreference");
     },
     setAdmin: function(state, value){
       state.isAdmin = value;
+    },
+    setChatModus: function(state, value){
+      state.pluginSettings.chatmodus = value;
     }
   },
   getters: {
     getIsAdmin: function(state){
       return state.isAdmin;
+    },
+    getChatModus: function(state){
+      return state.pluginSettings.chatmodus;
     },
     getCMID: function(state){
       return state.courseModuleID;
@@ -99,7 +106,6 @@ export const store = new Vuex.Store({
       return state.pageInstanceId;
     },
     getInformedConsentAgreement: function(state){
-      console.log('get pref')
       return state.informedConsentAgreement;
     }
   },
@@ -107,16 +113,14 @@ export const store = new Vuex.Store({
     loadPluginSettings: async function (context) {
       try {
         const cmid = context.getters.getCMID;
-        console.log(cmid);
         const req = await communication.webservice("load_settings", {
           cmid: cmid,
         });
-        console.log(req);
         if (req.success) {
-          console.log("loadPluginSettings: ", JSON.parse(req.data));
+          console.log("@store: loadPluginSettings: ", JSON.parse(req.data));
           context.commit('setPluginSettings', JSON.parse(req.data));
         } else {
-          console.log('loadPluginSettings', req);
+          console.log('@store: loadPluginSettings without success: ', req);
         }
       } catch (error) {
         console.error(error);
@@ -125,7 +129,6 @@ export const store = new Vuex.Store({
     },
     updatePluginSettings: async function (context) {
       try {
-        console.log('ddrin', context.getters.getPluginSettings)
         const response = await communication.webservice("update_settings", {
           cmid: context.getters.getCMID,
           settings: JSON.stringify(context.getters.getPluginSettings)
