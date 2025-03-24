@@ -33,6 +33,24 @@
             TODO: Ressource aus dem Kurs als Dokument hinzufügen;
             [todo: page, longpage, wiki, forum, assign]
         </div>
+        <div class="form-group">
+            <label for="llmSelect">Wähle LLM aus:</label>
+            <select
+                id="llmSelect"
+                class="form-control w50"
+                v-model="model"
+                @change="updateModel"
+            >
+                <option disabled value="">-- Bitte wählen --</option>
+                <option 
+                    v-for="m, index in $store.getters.getLLMModelList" 
+                    :key="m" 
+                    :value="m"
+                    >
+                    {{ m }}
+                </option>
+            </select>
+            </div>
     </div>
 </template>
 
@@ -48,8 +66,12 @@ export default {
     },
     data() {
         return {
-            
+           // model: '',
         };
+    },
+    created: function(){
+        this.model = this.$store.getters.getModel;
+        console.log('mounted moddel', this.model)
     },
     methods: {
         addDocument: function (response) {
@@ -70,7 +92,22 @@ export default {
         removeDocument: function (activity_id) {
             this.documents = this.documents.filter(doc => doc.id !== activity_id);
         },
-    }
+        updateModel: function(){
+            this.$store.commit('setModel', this.model);
+            this.$store.dispatch('updatePluginSettings');
+        }
+    },
+
+    computed: {
+        model: {
+            get () {
+            return this.$store.state.pluginSettings.model
+            },
+            set (value) {
+            this.$store.commit('setModel', value)
+            }
+        }
+        }
 }
 </script>
 <style scoped>

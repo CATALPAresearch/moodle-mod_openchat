@@ -12,7 +12,7 @@ function initOpenChat(
   course_module_id,
   contextid,
   isAdmin,
-  page_instance_id
+  page_instance_id,
 ) {
   
   store.commit("setPageInstanceId", page_instance_id);
@@ -21,10 +21,9 @@ function initOpenChat(
   store.commit("setAdmin", isAdmin);
   store.commit("setCourseModuleID", course_module_id);
   store.commit("setPageInstanceId", page_instance_id)
-  store.commit("setContextID", contextid);    
-  store.dispatch("loadModels");
+  store.commit("setContextID", contextid);
   store.dispatch("loadPluginSettings");
-
+  
 
   library.add(faCopy, faCog, faThumbsDown, faThumbsUp, faCheck);
 

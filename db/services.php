@@ -4,11 +4,20 @@ defined('MOODLE_INTERNAL') || die();
 
 $functions = array(
     
-    'mod_openchat_settings' => array(
+    'mod_openchat_load_settings' => array(
         'classname'   => 'mod_openchat_settings',
-        'methodname'  => 'getSettings',
+        'methodname'  => 'loadSettings',
         'classpath'   => 'mod/openchat/ws/settings.php',
         'description' => 'Get plugin settings.',
+        'type'        => 'write',
+        'ajax'        => true,
+        'loginrequired' => true
+    ),
+    'mod_openchat_update_settings' => array(
+        'classname'   => 'mod_openchat_settings',
+        'methodname'  => 'updateSettings',
+        'classpath'   => 'mod/openchat/ws/settings.php',
+        'description' => 'Update plugin settings.',
         'type'        => 'write',
         'ajax'        => true,
         'loginrequired' => true

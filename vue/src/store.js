@@ -19,8 +19,10 @@ export const store = new Vuex.Store({
     },
     courseModuleID: null,
     pageInstanceId: null,
-    ws_host: "http://localhost:5000",
-    ragWebserviceHost: "",
+    ws_host: "http://localhost:5000/",
+    ragWebserviceHost: "http://localhost:5000/",
+
+    llmModelList: []
     
   },
   mutations: {
@@ -33,7 +35,7 @@ export const store = new Vuex.Store({
       state.pluginSettings.model = settings.model;
       state.pluginSettings.prompttemplate = settings.prompttemplate;
       state.pluginSettings.courseModuleID = settings.courseModuleID;
-      
+      this.dispatch("loadModelNames");
       //console.log('storr', state.getters.pluginSettings.model)
     },
     setHostname(state, name) {
@@ -42,8 +44,11 @@ export const store = new Vuex.Store({
     setRAGWebserviceHost(state, name) {
       state.ragWebserviceHost = name;
     },
+    setLLMModelList(state, list){
+      state.llmModelList = list
+    },
     setModel(state, name) {
-      state.model = name;
+      state.pluginSettings.model = name;
     },
     setPrompttemplate(state, name) {
       state.prompttemplate = name;
@@ -65,8 +70,11 @@ export const store = new Vuex.Store({
     getRAGWebserviceHost: function (state) {
       return state.ragWebserviceHost
     },
+    getLLMModelList(state){
+      return state.llmModelList;
+    },
     getModel: function (state) {
-      return state.model;
+      return state.pluginSettings.model;
     },
     getPrompttemplate: function (state) {
       return state.prompttemplate;
@@ -82,9 +90,11 @@ export const store = new Vuex.Store({
     loadPluginSettings: async function (context) {
       try {
         const cmid = context.getters.getCMID;
-        const req = await communication.webservice("settings", {
+        console.log(cmid);
+        const req = await communication.webservice("load_settings", {
           cmid: cmid,
         });
+        console.log(req);
         if (req.success) {
           console.log("loadPluginSettings: ", JSON.parse(req.data));
           context.commit('setPluginSettings', JSON.parse(req.data));
@@ -92,19 +102,61 @@ export const store = new Vuex.Store({
           console.log('loadPluginSettings', req);
         }
       } catch (error) {
-        console.log('loadPluginSettings', error);
+        console.error(error);
+        throw new Error("@store: Failed to load plugin settings. ");
       }
     },
-    loadModels: async function() {
-      let path = "/llm/query_documents";
-      const response = await fetch(this.ws_host + path, {
+    updatePluginSettings: async function (context) {
+      try {
+        console.log('ddrin', context.getters.getPluginSettings)
+        const response = await communication.webservice("update_settings", {
+          cmid: context.getters.getCMID,
+          settings: JSON.stringify(context.getters.getPluginSettings)
+        });
+  
+        if (!response.success) {
+          console.error(response);
+          throw new Error("@store: Failed to update plugin settings. Webservice return ressult. ");
+        }else{
+          console.log('Stored settings', context.getters.getPluginSettings)
+        }
+  
+      } catch (error) {
+        console.error(error);
+        throw new Error("@store: Failed to update plugin settings. Webservice not reachable. ");
+      }
+    },
+    loadModelNames: async function (context) {
+      const url = context.getters.getPluginSettings.hostname + 'api/tags';
+      console.log('setLLMModelList', url)
+      const response = await fetch(url); // or your base_url
+      const data = await response.json();
+      console.log('Availab. models', data.models)
+      let models = data.models.map(m => m.name);
+      context.commit('setLLMModelList', models);
+    },
+    loadRAGModelNames: async function(context) {
+      let path = "llm/models/list";
+      let response = await fetch(this.getters.getRAGWebserviceHost + path, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           //Authorization: "Bearer " + apiKey,
         },
       });
-    }
+
+      if (!response.ok) {
+        console.error("Failed to fetch models:", response.statusText);
+        return;
+      }
+  
+      let data = await response.json();
+
+      if (data.success) {
+        context.commit('setLLMModelList', data.data);
+      }
+
+    },
   },
   modules: {},
 });

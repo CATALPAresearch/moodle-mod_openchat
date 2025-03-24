@@ -35,7 +35,7 @@ export default Vue.extend({
       //@ts-ignore
       let message_pos = this.messages.push({ author: "bot", message: "" });
 
-      const url = this.pluginSettings.hostname;
+      const url = this.pluginSettings.hostname + 'api/generate';
       const apiKey =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjczYmUyMGFiLWI4YjYtNDNmNS05YmZjLWIzMDU1OGZkODZiYyJ9.7QCdTgHAPVvTJgkbr7NLxYcO4iUTwlL4ai6rfw_neXE"; // Replace with your actual API key
       const payload = {

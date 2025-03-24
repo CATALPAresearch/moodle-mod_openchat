@@ -42,6 +42,7 @@ $PAGE->requires->js_call_amd('mod_openchat/app-lazy', 'initOpenChat', [
     'contextid' => $context->id,
     'isAdmin' => $isadmin,
     'page_instance_id' => $page->id, // use actual instance ID
+    //'hostname' => $page->hostname,
 ]);
 
 // Output page.

@@ -7,6 +7,8 @@
 
 curl -X POST http://localhost/moodle413/mod/openchat/llm_stream.php -d "model=phi3:latest" -d "prompt=Hello world"  -d "hostname=http://localhost:11434/api/generate"
 
+curl -X POST http://localhost:5000/llm/models/list
+
 </div>
 
 <br>
