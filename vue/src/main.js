@@ -23,6 +23,7 @@ function initOpenChat(
   store.commit("setPageInstanceId", page_instance_id)
   store.commit("setContextID", contextid);
   store.dispatch("loadPluginSettings");
+  store.dispatch("loadPreference");
   
 
   library.add(faCopy, faCog, faThumbsDown, faThumbsUp, faCheck);

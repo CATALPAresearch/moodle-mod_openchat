@@ -2,7 +2,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2025032409;
+$plugin->version = 2025032411;
 $plugin->requires = 2017111302;
 $plugin->component = 'mod_openchat';
 $plugin->maturity = MATURITY_ALPHA;

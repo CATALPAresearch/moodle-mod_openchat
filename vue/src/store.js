@@ -6,6 +6,7 @@ Vue.use(Vuex);
 
 export const store = new Vuex.Store({
   state: {
+    isAdmin: false,
     user: {
       groupId: null,
       peeredGroupId: null,
@@ -17,6 +18,7 @@ export const store = new Vuex.Store({
       model: null,
       prompttemplate: null,
     },
+    informedConsentAgreement: false,
     courseModuleID: null,
     pageInstanceId: null,
     ws_host: "http://localhost:5000/",
@@ -56,8 +58,19 @@ export const store = new Vuex.Store({
     setPageInstanceId(state, name) {
       state.pageInstanceId = name;
     },
+    setInformedConsentAgreement: function(state, value){
+      console.log('set pref')
+      state.informedConsentAgreement = value;
+      this.dispatch("updatePreference");
+    },
+    setAdmin: function(state, value){
+      state.isAdmin = value;
+    }
   },
   getters: {
+    getIsAdmin: function(state){
+      return state.isAdmin;
+    },
     getCMID: function(state){
       return state.courseModuleID;
     },
@@ -85,6 +98,10 @@ export const store = new Vuex.Store({
     getPageInstanceId: function (state) {
       return state.pageInstanceId;
     },
+    getInformedConsentAgreement: function(state){
+      console.log('get pref')
+      return state.informedConsentAgreement;
+    }
   },
   actions: {
     loadPluginSettings: async function (context) {
@@ -124,6 +141,40 @@ export const store = new Vuex.Store({
       } catch (error) {
         console.error(error);
         throw new Error("@store: Failed to update plugin settings. Webservice not reachable. ");
+      }
+    },
+    loadPreference: async function (context) {
+      try {
+        const req = await communication.webservice("preference", {
+          preference: 'accepted-informed-consent',
+          preference_value: 'none'
+        });
+        if (req.success) {
+          console.log('pref', req.preference)
+          context.informedConsentAgreement = req.preference;
+          context.commit('setInformedConsentAgreement', req.preference);
+        } else {
+          console.log('loadPluginpreference', req);
+        }
+      } catch (error) {
+        console.error(error);
+        throw new Error("@store: Failed to load plugin preference. ");
+      }
+    },
+    updatePreference: async function (context) {
+      try {
+        const req = await communication.webservice("preference", {
+          preference: 'accepted-informed-consent',
+          preference_value: context.getters.getInformedConsentAgreement,
+        });
+        if (req.success) {
+          console.log('loadPluginpreference done', req);//context.commit('setInformedConsentAgreement', JSON.parse(req.preference));
+        } else {
+          console.log('loadPluginpreference failed', req);
+        }
+      } catch (error) {
+        console.error(error);
+        throw new Error("@store: Failed to load plugin preference. ");
       }
     },
     loadModelNames: async function (context) {
