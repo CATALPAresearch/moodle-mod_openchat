@@ -49,10 +49,9 @@
         <h4>Verantwortlichkeiten</h4>
         <p>
           Verantwortlich für die Datenverarbeitung ist die FernUniversität in Hagen, Universitätsstraße 11, 58097 Hagen.
-          Bei Fragen wenden Sie sich bitte an den Datenschutzbeauftragten unter
-          datenschutzbeauftragter@fernuni-hagen.de.
-          Technische Fragen beantworten Ihnen Dr. Niels Seidel (niels.seidel@fernuni-hagen.de) und Prof. Dr. Torsten
-          Zesch (torsten.zesch@fernuni-hagen).
+          Bei Fragen wenden Sie sich bitte an den <a href="mailto:datenschutzbeauftragter@fernuni-hagen.de">Behördlichen Datenschutzbeauftragten</a>.
+          Technische Fragen beantworten Ihnen <a href="mailto:niels.seidel@fernuni-hagen.de">Dr. Niels Seidel</a> und <a href="mailto:torsten.zesch@fernuni-hagen">Prof. Dr. Torsten
+          Zesch</a>.
         </p>
         <hr>
         <div class="d-flex justify-content-between* align-items-center* mb-3">
