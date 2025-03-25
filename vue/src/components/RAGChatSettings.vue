@@ -1,26 +1,34 @@
 <template>
     <div class="settings mb-3">
-        <h3>Einstellungen</h3>
-        
+        <i 
+            class="btn btn-link fa fa-close ml-3 mt-1 settings-icon" 
+            style="float:right; cursor: pointer; font-size:1em; color:#555;"
+            @click="$store.commit('toggleShowSettings', 1)"
+            >
+        </i>
+        <h3 class="mb-3">Einstellungen</h3>
+
         <!-- Chat modus -->
         <div class="form-group">
-            <h4>Chat-Modus:</h4>
+            <h4>Chat-Modus</h4>
             <div>
-            <label>
-                <input type="radio" value="llm-chat" v-model="chatmodus" @change="updateChatModus" />
-                LLM-Chat (Standard)
-            </label>
-            <label>
-                <input type="radio" value="document-chat" v-model="chatmodus" @change="updateChatModus" />
-                Dokumenten-Chat
-            </label>
-            <label>
-                <input type="radio" value="srl-chat" v-model="chatmodus" @change="updateChatModus" />
-                SRL-Chat als Interview-Agent
-            </label>
+                <label>
+                    <input type="radio" value="llm-chat" v-model="chatmodus" @change="updateChatModus" />
+                    LLM-Chat (Standard)
+                </label>
+                <br>
+                <label>
+                    <input type="radio" value="document-chat" v-model="chatmodus" @change="updateChatModus" />
+                    Dokumenten-Chat
+                </label>
+                <br>
+                <label>
+                    <input type="radio" value="srl-chat" v-model="chatmodus" @change="updateChatModus" />
+                    SRL-Chat als Interview-Agent
+                </label>
             </div>
         </div>
-        
+        <hr>
         <!-- Settings for the document chat (RAG) -->
         <div v-if="chatmodus == 'document-chat'">
             <h4>Dokumente für Dokumenten-Chat</h4>
@@ -57,7 +65,7 @@
                 longpage, wiki, forum, assign]
             </div>
         </div>
-        
+        <hr>
         <!-- Standard settings for all chat modi -->
         <div class="form-group">
             <h4 for="llmSelect">Auswahl des Sprachmodels</h4>
@@ -91,7 +99,7 @@ export default {
         this.chatmodus = this.$store.getters.getChatModus;
         console.log('this.chatmodus', this.chatmodus)
     },
-    
+
     methods: {
         addDocument: function (response) {
             console.log("handle adddocument", response);
@@ -111,9 +119,10 @@ export default {
         removeDocument: function (activity_id) {
             this.documents = this.documents.filter((doc) => doc.id !== activity_id);
         },
-        updateChatModus: function(){
+        updateChatModus: function () {
             this.$store.commit("setChatModus", this.chatmodus);
             this.$store.dispatch("updatePluginSettings");
+            this.$router.push(this.chatmodus);
         },
         updateModel: function () {
             this.$store.commit("setModel", this.model);

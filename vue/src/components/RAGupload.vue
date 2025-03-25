@@ -46,19 +46,19 @@ export default {
             var activity_type = 'pdf';
             var document_id = Math.floor(Math.random()*30000); // FixMe
             const formData = new FormData();
+            const systemContext = this.$store.getters.getSystemContext
             formData.append("file", this.selectedFile);
+            formData.append("system", systemContext['systemName']);
+            formData.append("course_id", systemContext['courseID']);
             formData.append("activity_type", activity_type);
             formData.append("document_id", document_id);
 
-
+            const url = this.$store.getters.getRAGWebserviceHost + "documents/create_index";
+            //console.log('form upload data', formData)
             await axios.post(
-                "http://localhost:5000/documents/create_index", // Replace with actual web service URL
+                url,
                 formData,
-                {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
-                }
+                { headers: { "Content-Type": "multipart/form-data" } }
             ).then(response => {
                 console.log("Web Service Response:", this.webServiceResponse);
                 

@@ -9,6 +9,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 
 function initOpenChat(
+  systemName, 
+  courseID, 
   course_module_id,
   contextid,
   isAdmin,
@@ -18,12 +20,14 @@ function initOpenChat(
   store.commit("setPageInstanceId", page_instance_id);
 
   // new
+  store.commit("setSystemContext", {"systemName": systemName, "courseID": courseID });
   store.commit("setAdmin", isAdmin);
   store.commit("setCourseModuleID", course_module_id);
   store.commit("setPageInstanceId", page_instance_id)
   store.commit("setContextID", contextid);
   store.dispatch("loadPluginSettings");
   store.dispatch("loadPreference");
+  store.dispatch("loadRAGDocuments")
   
 
   library.add(faCopy, faCog, faThumbsDown, faThumbsUp, faCheck);

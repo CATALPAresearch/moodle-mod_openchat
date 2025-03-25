@@ -8,8 +8,8 @@ Vue.use(VueRouter); // ✅ Important: Use VueRouter before creating the instance
 
 const routes = [
   { path: '/', redirect: '/srl-chat' }, // Default route
-  { path: '/srl-chat', component: SRLChat },
-  { path: '/rag-chat', component: RAGChat },
+  { path: '/srl-chat', component: SRLChat},
+  { path: '/document-chat', component: RAGChat },
   { path: '/llm-chat', component: LLMChat }
 ];
 

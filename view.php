@@ -36,8 +36,12 @@ $PAGE->set_title(format_string($page->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
 
+global $SITE;
+
 // Load JavaScript (AMD, Vue) app.
 $PAGE->requires->js_call_amd('mod_openchat/app-lazy', 'initOpenChat', [
+    'systemName' => $SITE->shortname,
+    'courseID' => $course->id,
     'coursemoduleid' => $coursemodule->id,
     'contextid' => $context->id,
     'isAdmin' => $isadmin,

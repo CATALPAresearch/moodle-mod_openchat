@@ -7,12 +7,14 @@ Vue.use(Vuex);
 export const store = new Vuex.Store({
   state: {
     isAdmin: false,
+    showSettings: false,
+
+    // user context
     user: {
-      groupId: null,
-      peeredGroupId: null,
-      astate: false,
       userId: null,
     },
+
+    // plugin context
     pluginSettings: {
       hostname: null,
       model: null,
@@ -20,15 +22,28 @@ export const store = new Vuex.Store({
       chatmodus: null,
     },
     informedConsentAgreement: false,
+    
+    // system context
+    systemName: null,
+    courseID: null,
     courseModuleID: null,
     pageInstanceId: null,
-    ws_host: "http://localhost:5000/",
     ragWebserviceHost: "http://localhost:5000/",
 
     llmModelList: []
     
   },
   mutations: {
+    setDocuments: function(state, docs){
+      state.documents = docs;
+    },
+    setSystemContext: function(state, arr){
+      state.systemName = arr['systemName'];
+      state.courseID = arr['courseID'];
+    },
+    toggleShowSettings: function(state, id){
+      state.showSettings = !state.showSettings;
+    },
     setCourseModuleID: function(state, id) {
       state.courseModuleID = id;
     },
@@ -72,6 +87,15 @@ export const store = new Vuex.Store({
     }
   },
   getters: {
+    getSystemContext: function(state){
+      return {
+        systemName: state.systemName,
+        courseID: state.courseID
+      };
+    },
+    showSettings: function(state){
+      return state.showSettings;
+    },
     getIsAdmin: function(state){
       return state.isAdmin;
     },
@@ -189,6 +213,36 @@ export const store = new Vuex.Store({
       let models = data.models.map(m => m.name);
       context.commit('setLLMModelList', models);
     },
+    loadRAGDocuments: async function(context) {
+      // Loads documents already indexed for RAG
+      const sc = context.getters.getSystemContext;
+      const payload = {
+        system: sc.systemName,
+        course_id: sc.courseID
+      };
+      const url = this.getters.getRAGWebserviceHost + "documents/documents_by_course";
+      let response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          //Authorization: "Bearer " + apiKey,
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        console.error("Failed to fetch models:", response.statusText);
+        return;
+      }
+      let data = await response.json();
+
+      if (data.success) {
+        console.log('rag do', data.documents)
+        context.commit('setDocuments', data.documents);
+      }
+
+    },
+    /*
     loadRAGModelNames: async function(context) {
       let path = "llm/models/list";
       let response = await fetch(this.getters.getRAGWebserviceHost + path, {
@@ -210,7 +264,7 @@ export const store = new Vuex.Store({
         context.commit('setLLMModelList', data.data);
       }
 
-    },
+    },*/
   },
   modules: {},
 });

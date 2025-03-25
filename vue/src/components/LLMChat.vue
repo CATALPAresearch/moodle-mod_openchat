@@ -3,7 +3,13 @@
     <div class="chat-header mb-3 w100">
       <h3 class="d-flex justify-content-between* align-items-center* mb-3">
         LLM-Chat
+        <i class="fa fa-cog ml-3 mt-1 settings-icon" style="font-size:0.8em; color:#555;"
+                    @click="$store.commit('toggleShowSettings', 1)"></i>
       </h3>
+      <RAGChatSettings 
+        v-if="$store.getters.showSettings" 
+        :documents="[]" 
+        />
     </div>
 
     <ChatUI :messages="messages" @requestChatResponse="requestServerChat" />
@@ -13,13 +19,18 @@
 <script lang="ts">
 import Vue from "vue";
 import { mapGetters } from 'vuex'
+import RAGChatSettings from "./RAGChatSettings.vue";
 import ChatUI from "./ChatUI.vue";
 
 export default Vue.extend({
   name: "LLMChat",
   components: {
+    RAGChatSettings: RAGChatSettings,
     ChatUI: ChatUI
   },
+  props: {
+        show_setting: Boolean,
+    },
   data() {
     return {
       messages: [],

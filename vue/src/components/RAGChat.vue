@@ -4,11 +4,11 @@
             <h3 class="d-flex justify-content-between* align-items-center* mb-3">
                 Dokumenten-Chat
                 <i class="fa fa-cog ml-3 mt-1 settings-icon" style="font-size:0.8em; color:#555;"
-                    @click="show_settings = !show_settings"></i>
+                    @click="$store.commit('toggleShowSettings', 1)"></i>
             </h3>
 
             <RAGChatSettings 
-                v-if="show_settings" 
+                v-if="$store.getters.showSettings" 
                 :documents="documents" 
                 />
 
@@ -35,7 +35,6 @@ export default Vue.extend({
     },
     data() {
         return {
-            show_settings: true,
             messages: [],
             documents: [],
             document_index: [],
@@ -57,7 +56,7 @@ export default Vue.extend({
             let message_pos = this.messages.push({ author: "bot", message: "" });
 
             // default
-            let url = "http://localhost:5000/llm/query_documents";//this.hostname();
+            let url = this.$store.getters.getRAGWebserviceHost + "llm/query_documents";
             let payload = {
                 //"model": this.model(),//"llama3.1",
                 "filter": [],
