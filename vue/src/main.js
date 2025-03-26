@@ -27,7 +27,7 @@ function initOpenChat(
   store.commit("setContextID", contextid);
   store.dispatch("loadPluginSettings");
   store.dispatch("loadPreference");
-  store.dispatch("loadRAGDocuments")
+  //store.dispatch("loadRAGDocuments");
   
 
   library.add(faCopy, faCog, faThumbsDown, faThumbsUp, faCheck);

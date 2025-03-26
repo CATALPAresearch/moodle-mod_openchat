@@ -13,6 +13,7 @@
                 />
 
         </div>
+        
 
         <ChatUI 
             :messages="messages"
@@ -38,6 +39,7 @@ export default Vue.extend({
             messages: [],
             documents: [],
             document_index: [],
+            document_filter: [],
             error_msg: '',
         };
     },
@@ -48,7 +50,12 @@ export default Vue.extend({
             pluginSettings: 'getPluginSettings',
         }),
         requestDocumentChat: async function (message) {
+            if(this.$store.getters.getChatModus !== 'document-chat'){
+                return;
+            }
             console.log('requestDocumentChat');
+            console.log('filter', this.updateDocumentFilter())
+            
             let _this = this;
             //@ts-ignore
             this.messages.push({ author: "user", message: message });
@@ -59,7 +66,7 @@ export default Vue.extend({
             let url = this.$store.getters.getRAGWebserviceHost + "llm/query_documents";
             let payload = {
                 //"model": this.model(),//"llama3.1",
-                "filter": [],
+                "filter": this.updateDocumentFilter(),
                 "prompt": message,
             };
             const apiKey = ""; // Replace with your actual API key
@@ -108,27 +115,22 @@ export default Vue.extend({
         },
         
         updateDocumentFilter: function () {
-            let activities = [];
-            let document_types = this.documents.filter(); // todo
-            for (let dtype in document_types) {
-                if (activities[dtype] == null) {
-                    activities[dtype] = []
-                }
-                for (let doc in this.documents) {
-                    if (doc.activity_type == dtype) {
-                        activities[dtype].push(doc.activity_id);
-                    }
-
-                }
-            }
+            // Expected format: filter = { 'system': ['aple-demo-moodle'], 'course_id': [0], 'activity_longpage': [1,7], }
+            // Base filter
             this.document_filter = {
-                'system': ['aple-demo-moodle'], // FixMe: this.moodle
-                'courses': [0], // FixMe: this.course_id
+                'system': [ this.$store.getters.getSystemContext.systemName ],
+                'courses': [ this.$store.getters.getSystemContext.courseID ],
             }
-            for (let a in activities) {
-                this.document_filter[a] = activities[a];
+            // Document-related filter
+            for (let i = 0; i < this.documents.length; i++) {
+                let doc = this.documents[i];
+                console.log('doc ', doc);
+                if(this.document_filter['activity_'+doc['activity_type']] == null){
+                    this.document_filter['activity_'+doc['activity_type']] = []
+                }
+                this.document_filter['activity_'+doc['activity_type']].push(doc['activity_id']);
             }
-            console.log(this.document_filter)
+            console.log('resulting filter', this.document_filter)
             return this.document_filter;
         },
     },

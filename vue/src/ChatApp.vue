@@ -11,9 +11,9 @@
       <div v-if="$store.getters.getInformedConsentAgreement == 'no'" class="alert alert-info" role="alert">
         <h3>Einwilligung in die Nutzung von Openchat</h3>
         <h4>Zweck der Untersuchung in Openchat</h4>
-        <p>Die Untersuchung in Openchat dient dazu die technischen und didaktischen Veraussetzungen für die Anwendung
+        <p>Die Untersuchung in Openchat dient dazu die technischen und didaktischen Voraussetzungen für die Anwendung
           von Large Language Models (LLMs) für das Lernen und Lehren zu ermitteln und herzustellen.</p>
-        <h4>Erfasste und verabeitete Daten</h4>
+        <h4>Erfasste und verarbeitete Daten</h4>
         <p>
           Während der Nutzung von Openchat werden Interaktionen wie Klicks, Texteingaben und die für den Dokument-Chat
           bereitgestellten Dokumente (bspw. PDFs, Moodle-Ressourcen) sowie die Antworten der Sprachmodelle in
@@ -97,6 +97,10 @@ export default {
   margin: 0 auto;
 }
 
+.consent p {
+  font-size: 1.1em;
+}
+
 .consent h4 {
   font-size: 1.1em;
   margin-bottom: 2px;
@@ -105,6 +109,11 @@ export default {
 .consent p {
   margin-bottom: 4px;
   margin-top: 0px
+}
+
+.consent a {
+  text-decoration: underline;
+  font-weight: 100;
 }
 
 nav {

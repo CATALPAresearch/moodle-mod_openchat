@@ -44,14 +44,14 @@ export default {
             }
             this.isProcessing = true;
             var activity_type = 'pdf';
-            var document_id = Math.floor(Math.random()*30000); // FixMe
+            var activity_id = Math.floor(Math.random()*30000); // FixMe
             const formData = new FormData();
             const systemContext = this.$store.getters.getSystemContext
             formData.append("file", this.selectedFile);
             formData.append("system", systemContext['systemName']);
             formData.append("course_id", systemContext['courseID']);
             formData.append("activity_type", activity_type);
-            formData.append("document_id", document_id);
+            formData.append("activity_id", activity_id);
 
             const url = this.$store.getters.getRAGWebserviceHost + "documents/create_index";
             //console.log('form upload data', formData)
@@ -60,15 +60,14 @@ export default {
                 formData,
                 { headers: { "Content-Type": "multipart/form-data" } }
             ).then(response => {
-                console.log("Web Service Response:", this.webServiceResponse);
-                
                 this.webServiceResponse = {
                     error: false,
                     document_index: response.document_index,
                     file: _this.selectedFile,
-                    document_id: document_id,
+                    activity_id: activity_id,
                     activity_type: activity_type,
                 };
+                console.log("Web Service Response:", this.webServiceResponse);
                 // send recaived data to parent component
                 this.$emit("document_uploaded", this.webServiceResponse);
                 

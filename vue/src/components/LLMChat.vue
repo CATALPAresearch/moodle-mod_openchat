@@ -4,12 +4,9 @@
       <h3 class="d-flex justify-content-between* align-items-center* mb-3">
         LLM-Chat
         <i class="fa fa-cog ml-3 mt-1 settings-icon" style="font-size:0.8em; color:#555;"
-                    @click="$store.commit('toggleShowSettings', 1)"></i>
+          @click="$store.commit('toggleShowSettings', 1)"></i>
       </h3>
-      <RAGChatSettings 
-        v-if="$store.getters.showSettings" 
-        :documents="[]" 
-        />
+      <RAGChatSettings v-if="$store.getters.showSettings" :documents="[]" />
     </div>
 
     <ChatUI :messages="messages" @requestChatResponse="requestServerChat" />
@@ -29,8 +26,8 @@ export default Vue.extend({
     ChatUI: ChatUI
   },
   props: {
-        show_setting: Boolean,
-    },
+    show_setting: Boolean,
+  },
   data() {
     return {
       messages: [],
@@ -39,69 +36,20 @@ export default Vue.extend({
   mounted: function () { },
   methods: {
 
-    requestClientChat: async function (message) {
-      let _this = this;
-      //@ts-ignore
-      this.messages.push({ author: "user", message: message });
-      //@ts-ignore
-      let message_pos = this.messages.push({ author: "bot", message: "" });
-
-      const url = this.pluginSettings.hostname + 'api/generate';
-      const apiKey =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjczYmUyMGFiLWI4YjYtNDNmNS05YmZjLWIzMDU1OGZkODZiYyJ9.7QCdTgHAPVvTJgkbr7NLxYcO4iUTwlL4ai6rfw_neXE"; // Replace with your actual API key
-      const payload = {
-        model: this.pluginSettings.model,//"llama3.1",
-        prompt: message,
-      };
-
-      try {
-        // send request
-        const response = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + apiKey,
-          },
-          body: JSON.stringify(payload),
-        });
-
-        if (!response.ok) {
-          throw new Error("HTTP error! Status:" + response.status);
-        }
-
-        // Handle response
-        //@ts-ignore
-        const reader = response.body != null ? response.body.getReader() : null;
-        const decoder = new TextDecoder("utf-8");
-        let done = false;
-
-        while (!done) {
-          //@ts-ignore
-          const { value, done: readerDone } = await reader.read();
-          done = readerDone;
-
-          if (value) {
-            const chunk = decoder.decode(value, { stream: true });
-            let res = "";
-            try {
-              res = JSON.parse(chunk).response;
-            } catch (e) {
-              res = "";
-            }
-            //@ts-ignore
-            _this.messages[message_pos - 1].message = _this.messages[message_pos - 1].message + res;
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching streaming data:", error);
-      }
-    },
     requestServerChat: async function (message) {
       let _this = this;
+      if (this.$store.getters.getChatModus !== 'llm-chat') {
+        return;
+      }
+      if (message == null || message.length == 0) {
+        console.error('@LLMChat: Received empty message for LLM request');
+      }
+      
       //@ts-ignore
       this.messages.push({ author: "user", message: message });
       //@ts-ignore
       let message_pos = this.messages.push({ author: "bot", message: "" });
+      //let message_pos = this.messages.length;
 
       let postData = new FormData();
       postData.append('model', this.pluginSettings.model);
@@ -111,41 +59,52 @@ export default Vue.extend({
       //postData.append('pageinstanceid', this.pageInstanceId);
 
 
-      try {
-        const response = await fetch(M.cfg.wwwroot + "/mod/openchat/llm_stream.php", {
-          method: "POST",
-          body: postData,
-        });
+      const url = M.cfg.wwwroot + "/mod/openchat/llm_stream2.php";
 
-        if (!response.body) {
-          throw new Error(
-            "ReadableStream is not supported in this environment."
-          );
-        }
+      const response = await fetch(url, {
+        method: 'POST',
+        body: postData
+      });
 
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder("utf-8");
-        let done = false;
+      if (!response.body) {
+        console.error("No response body (stream unsupported)");
+        return;
+      }
 
-        while (!done) {
-          const { value, done: streamDone } = await reader.read();
-          done = streamDone;
-          if (value) {
-            const chunk = decoder.decode(value, { stream: true });
-            let res = "";
-            try {
-              res = JSON.parse(chunk).response;
-            } catch (e) {
-              res = "";
-            }
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+      let completeText = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+
+        // Ollama returns JSON per line
+        const lines = chunk.split('\n').filter(line => line.trim() !== '');
+        for (const line of lines) {
+          try {
+            const parsed = JSON.parse(line);
+            if (parsed.done) break;
+
+            const content = parsed.response;
+            completeText += content;
+
+            // Optionally update a live DOM element
+            console.log("Chunk:", content);
             //@ts-ignore
-            _this.messages[message_pos - 1].message = _this.messages[message_pos - 1].message + res;
-            //outputElement.textContent += chunk; // Append data to the output element
+            _this.messages[message_pos - 1].message = _this.messages[message_pos - 1].message + content;
+
+            //document.getElementById('output').textContent = completeText;
+          } catch (e) {
+            console.warn("Failed to parse chunk", line, e);
           }
         }
-      } catch (error) {
-        console.error("Error fetching streaming data:", error);
       }
+
+      console.log("Final response:", completeText);
+      //this.messages[message_pos - 1].message = completeText;
     },
   },
   computed: {

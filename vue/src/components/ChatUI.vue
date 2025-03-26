@@ -1,11 +1,11 @@
 <template>
     <div id="chat">
         <div class="w-100">
-            <div v-for="index, m in messages" key="m" :class="m.author == 'bot' ? 'message-bot' : 'message--human'">
+            <div v-for="m in messages" key="m">
                 <div :class="m.author == 'bot' ? 'chat-message ml-auto user-bot' : 'chat-message user-human'">
-                    <i v-if="m.message.length == 0" class="fa fa-spinner fa-spin"></i>
-                    <div v-html="m.message"></div>
-                    <div v-if="m.author == 'bot' && m.message.length > 0" class="message-actions">
+                    <i v-if="m.message == ''" class="fa fa-spinner fa-spin"></i>
+                    <div>{{ m.message }}</div>
+                    <div v-if="m.author == 'bot' && m.message != ''" class="message-actions">
                         <font-awesome-icon v-if="!copied" @click="copyMessageToClipboard(m.message)" icon="copy" />
                         <font-awesome-icon v-if="copied" icon="check" />
                         <font-awesome-icon icon="thumbs-up" @click="sendRating('up', index)" />

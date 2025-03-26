@@ -1,30 +1,10 @@
 <?php
-require('../../config.php');
-require_once($CFG->dirroot . '/mod/openchat/lib.php');
-require_once($CFG->libdir . '/completionlib.php');
-require_once($CFG->libdir . '/formslib.php');
-
-require_login();
-
 header('Content-Type: text/event-stream');
 header('Cache-Control: no-cache');
 header('Connection: keep-alive');
 
+
 $mode = 'normal';
-
-/*
-$model = 'deepseek-r1';
-$hostname = 'http://localhost:5000/process';
-$prompt = 'Was muss ich können?';
-$id = 4;
-$p=169;
-
-$model = $_GET['model'];
-$prompt = $_GET['prompt'];
-$hostname = $_GET['hostname'];
-$id = $_GET['coursemoduleid'];
-$p = $_GET['pageinstanceid'];
-*/
 
 
 $model = $_POST['model'];
@@ -37,20 +17,7 @@ $hostname = "http://localhost:5000/llm/query_documents";//$_POST['hostname']; # 
 $id = $_POST['coursemoduleid'];
 $p = $_POST['pageinstanceid'];
 
-/*
-if ($p) {
-    if (!$page = $DB->get_record('openchat', array('id' => $p))) {
-        print_error('invalidaccessparameter', 'error', $CFG->wwwroot);
-    }
-    $cm = get_coursemodule_from_instance('openchat', $page->id, $page->course, false, MUST_EXIST);
-} else {
-    if (!$cm = get_coursemodule_from_id('openchat', $id)) {
-        print_error('invalidcoursemodule', 'error', $CFG->wwwroot);
-    }
-    $page = $DB->get_record('openchat', array('id' => $cm->instance), '*', MUST_EXIST);
-}
-$apiKey = $page->apikey;
-*/
+
 
 
 //$post_data = [
