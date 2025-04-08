@@ -36,6 +36,8 @@ function xmldb_openchat_upgrade($oldversion = 0) {
         $time = time();        
         $field = new xmldb_field('chatmodus', XMLDB_TYPE_TEXT, '25', null, null, null, 'llm-chat');
         if(!$dbman->field_exists($table,$field)){ $dbman->add_field($table,$field);}
+        $field = new xmldb_field('intro', XMLDB_TYPE_TEXT, null, null, null, null, '');
+        if(!$dbman->field_exists($table,$field)){ $dbman->add_field($table,$field);}
         
         // Grouping corrction because of MySQL compatability
         //$field = new xmldb_field('chatmodus', XMLDB_TYPE_INTEGER, '10');

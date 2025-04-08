@@ -8,6 +8,7 @@
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
                 <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="intro" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="hostname" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="apikey" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="model" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
