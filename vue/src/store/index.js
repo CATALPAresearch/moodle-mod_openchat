@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import communication from "./classes/communication";
+import communication from "../classes/communication";
 
 Vue.use(Vuex);
 
