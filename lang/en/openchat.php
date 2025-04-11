@@ -21,3 +21,5 @@ $string['apikey'] = 'API Key';
 $string['model'] = 'LLM Model';
 $string['prompttemplate'] = 'Prompt Template (not implemented yet)';
 
+$string['privacy:metadata'] = 'The Calendar block only displays existing calendar data.';
+

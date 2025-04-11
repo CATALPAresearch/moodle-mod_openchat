@@ -1,18 +1,16 @@
-<br>
-<div align="center">
-
-<img src="pix/openchat.png" width="500" />
-
-
-
+<!--
 curl -X POST http://localhost/moodle413/mod/openchat/llm_stream.php -d "model=phi3:latest" -d "prompt=Hello world"  -d "hostname=http://localhost:11434/api/generate"
 
 curl -X POST http://localhost:5000/llm/models/list
 
+-->
+<br>
+<div align="center">
+  <img src="pix/openchat.png" width="500" />
 </div>
 
 <br>
-<h1 align="center">openchat</h1>
+<h1 align="center">OpenChat</h1>
 
 ## *OpenChat* is a Moodle activity plugin for chatting with open-source large language models.
 
@@ -55,7 +53,7 @@ Human in the Loop
 Data Retention
 Compliance
 -->
-![](https://img.shields.io/badge/collects_clickstream_data-no-blue)
+![](https://img.shields.io/badge/collects_clickstream_data-yes-green)
 ![](https://img.shields.io/badge/collects_playback_data-no-blue)
 ![](https://img.shields.io/badge/collects_scroll_data-no-blue)
 ![](https://img.shields.io/badge/collects_mouse_data-no-blue)
@@ -83,33 +81,50 @@ Compliance
 
 ## Key Features
 
-* server-side communication between PHP and OpenWebUI API. 
+**General**
 * customizable host url, API end points, and API key.
-* definition of the proposed LLM model in the plugin settings
-* minimal user interface
 * (optional) A purely javascript-based interface to OpenWebUI. However, this is not recommended if API is secured by an API key.
+* server-side communication between PHP and OpenWebUI API and RAG webservice. 
+* minimal user interface
+* Teachers can add several instances of OpenChat to a course
+
+**LLM chat**
+As a teacher:
+* Select a model to be used for the document chat
+
+**Document chat (RAG)**
+Settings for teachers:
+* Select and upload a number of PDF files to be index for RAG
+* Chose from the indexed document the ones to be used for the docment chat
+* Select a model to be used for the document chat
+
+Students can pose questions in the document chat that are answered based on the documents selected by the teacher.
 
 
-## Roadmap and Limitations
+## Roadmap
 **Roadmap**
-* binding to a RAG webservice
-  * proof of concept
-  * add to settings
-* support continuous chat sessions => endpoint /chat
-* making LLM model selectable by the user (student)
-* In future, teachers should be able to define prompt templates that encapsulate student LLM requests. These encapsilations can be used to enrich the prompt with additional instructions or to instruct the LLM to withdraw certain information. 
-* UI redesign
+* As a student I would like to browse through past chat sessions to see my previous communication with the LLM/RAG.
+* attribute documents and document parts where the information was found
+* As a student I want to optionally select the LLM model to be used for my specific needs.
+* teachers should be able to define prompt templates that encapsulate student LLM requests. These encapsilations can be used to enrich the prompt with additional instructions or to instruct the LLM to withdraw certain information. 
+* As a teacher I need a description about the capabilities, limitations, and use cases of the available models in order provide appropriate apprpriate quality of the generated content. 
 
 nth
 * add further language strings and its translations 
 * log user interactions, optional als the text input
 * compatability with LLM servers other then OpenWebUI, e.g. ChatGPT
 
-**Limitations**
-- quickly coded without much testing
+
 
 ## How To Use
 
+**Prerequisits**
+LLM-Server:
+
+
+RAG Webservice:
+
+**Setup**
 To clone and run this application, you'll need [Git](https://git-scm.com) and [Node.js](https://nodejs.org/en/download/) (which comes with [npm](http://npmjs.com)) installed on your computer. From your command line:
 
 ```bash
@@ -142,12 +157,26 @@ $ php admin/cli/upgrade.php
 
 ```
 
+
+
 ## Download
 
-You can [download](https://github.com/catalparesearch/moodle-mod_openchat/releases/tag/latest) the latest installable version of *openchat* for Moodle 3.11. or 4.x.
+You can [download](https://github.com/catalparesearch/moodle-mod_openchat/releases/tag/latest) the latest installable version of *OpenChat* for Moodle 3.11. or 4.x.
 
-## Getting into Development
-Client-side code is located in the folder vue/. The file view.php contains the root DOM element of the video player. The webservice for accessing Moodle database can be found at db/external.php. 
+## Getting Started with Development
+
+The client-side code lives in the `vue/` folder. The root DOM element is defined in `view.php`. Webservices for Moodle database access are declared in `./db/services.php` and implemented in `./ws/`.
+
+### 🙌 How You Can Help
+
+We're actively looking for contributors to support and improve this project. You can help by:
+
+- 🧪 **Testing** plugin functionality  
+- 💡 **Providing feedback** on usability and UX  
+- 🌍 **Adding translations** in your language  
+- 🚀 **Suggesting or implementing** new features  
+
+Open an [issue](https://github.com/catalparesearch/moodle-mod_openchat/issues) to share ideas, or submit a pull request — we’d love to collaborate!
 
 
 ## Emailware
@@ -163,6 +192,12 @@ This software uses the following open source packages:
 ## Related
 
 * [https://moodle.org/plugins/block_openai_chat](block_openai_chat)
+* [https://moodle.org/plugins/block_ai_chat](block_ai_chat)
+* [https://moodle.org/plugins/tiny_ai](tiny_ai)
+<!--
+https://moodle.org/plugins/local_ai_manager
+https://moodle.org/plugins/block_ai_control
+-->
 
 ## Citation
 
@@ -170,9 +205,9 @@ This software uses the following open source packages:
 @misc{Seidel2024-OpenChat,
 author = {Seidel, Niels},
 doi = {},
-title = {{OpenChat - Moodle activity plugin for LLM chats with OpenWebUI}},
+title = {{OpenChat - Moodle activity plugin for chats with Large Language Models including Retrieval Augmented Generation}},
 url = {https://github.com/CATALPAresearch/moodle-mod{\_}openchat},
-year = {2024}
+year = {2025}
 }
 ```
 
@@ -186,7 +221,7 @@ year = {2024}
 
 
 ## Contributors
-* Niels Seidel [@nise81](https://twitter.com/nise81)
+* Niels Seidel [niels.seidl@fernuni-hagen.de](niels.seidl@fernuni-hagen.de)
 
 ---
 <a href="https://www.fernuni-hagen.de/english/research/clusters/catalpa/"><img src="pix/promotion/catalpa.jpg" width="300" /></a>
