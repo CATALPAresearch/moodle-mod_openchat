@@ -90,6 +90,15 @@ export default Vue.extend({
 </script>
 
 <style scoped>
+
+.sr-only {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 #chat {
     display: block;
     width: 500px;

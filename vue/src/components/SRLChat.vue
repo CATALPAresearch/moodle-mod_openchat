@@ -1,9 +1,10 @@
 <template>
-    <div id="container" class="content">
+    <div id="container" class="content" role="main">
         <div id="chat">
             <div class="col-6">
-                <div class="box" v-if="is_loading">
-                    <i class="fa fa-spin" />
+                <div class="box" v-if="is_loading" role="status" aria-live="polite">
+                    <i class="fa fa-spin" aria-hidden="true" />
+                    <span class="sr-only">Loading...</span>
                 </div>
             </div>
             <button v-if="!chatStarted" @click="startChat" class="btn btn-primary start-btn">
@@ -11,22 +12,23 @@
             </button>
 
             <div v-if="chatStarted" class="chat-container">
-                <div class="messages">
-                    <div v-for="(message, index) in messages" :key="index" :class="{
-                        'user-message': message.user,
-                        'server-message': !message.user,
-                    }">
+                <div class="messages" role="log" aria-live="polite" aria-relevant="additions" aria-atomic="false">
+                    <div v-for="(message, index) in messages" :key="index"
+                        :class="{ 'user-message': message.user, 'server-message': !message.user, }"
+                        :aria-label="message.user ? 'Your message' : 'Message from the LLM'" role="article">
                         {{ message.text }}
                     </div>
                 </div>
 
-                <div class="chat-input">
-                    <input v-model="userInput" @keyup.enter="sendMessage" placeholder="Type a message..." />
-                    <button @click="sendMessage">Send</button>
-                </div>
+                <form @submit.prevent="sendMessage" class="chat-input">
+                    <label for="chat-input" class="sr-only">Type your message</label>
+                    <input id="chat-input" v-model="userInput" placeholder="Type a message..."
+                        aria-label="Message input field" :disabled="is_loading"
+                        :aria-disabled="is_loading" />
+                    <button type="submit" aria-label="Send message">Send</button>
+                </form>
             </div>
         </div>
-    </div>
     </div>
 </template>
 
@@ -95,6 +97,14 @@ export default {
     },
 };
 </script>
+
+.sr-only {
+position: absolute;
+left: -9999px;
+width: 1px;
+height: 1px;
+overflow: hidden;
+}
 
 <style scoped>
 .chat-widget {

@@ -5,10 +5,28 @@
                 <span v-if="isProcessing"><i class="fa fa-spinner fa-spin"></i> Indexierung läuft: </span>
                 <span v-if="selectedFile">{{ selectedFile.name }}</span>
             </div>
+            <div aria-live="polite" class="sr-only">
+                <span v-if="isProcessing">Indexierung läuft</span>
+                <span v-else-if="selectedFile">Datei {{ selectedFile.name }} ausgewählt</span>
+            </div>
             <div style="display: table-cell;">
-                <span v-if="!isProcessing" :class="{'btn btn-primary btn-sm': selectedFile==null, 'btn btn-light btn-sm': selectedFile!=null}">PDF auswählen</span>
-                <input v-if="!isProcessing" class="btn btn-primary btn-sm" title="Bl" type="file" @change="handleFileUpload" accept="application/pdf" />
-                <span v-if="selectedFile && !isProcessing" class="btn btn-primary btn-sm" @click="sendToWebService">PDF hochladen</span>
+                <label 
+                    for="pdf-upload" 
+                    v-if="!isProcessing" 
+                    :class="{'btn btn-primary btn-sm': selectedFile==null, 'btn btn-light btn-sm': selectedFile!=null}">
+                    PDF auswählen
+                </label>
+                <input 
+                    id="pdf-upload"    
+                    v-if="!isProcessing" 
+                    class="btn btn-primary btn-sm" 
+                    title="Die hochgeladene Lernressource wird gerade verarbeitet." 
+                    type="file" 
+                    @change="handleFileUpload" 
+                    accept="application/pdf" />
+                <button v-if="selectedFile && !isProcessing" class="btn btn-primary btn-sm" @click="sendToWebService">
+                    PDF hochladen
+                </button>
             </div>
         </label>
         <div v-if="debug && webServiceResponse">
