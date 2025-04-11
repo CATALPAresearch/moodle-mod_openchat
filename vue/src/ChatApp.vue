@@ -10,7 +10,7 @@
       </div>
       <div v-if="$store.getters.getInformedConsentAgreement == 'no'" class="alert alert-info" role="alert">
         <h3>Einwilligung in die Nutzung von Openchat</h3>
-        <h4>Zweck der Untersuchung in Openchat</h4>
+        <h4>Zweck der Untersuchung in OpenChat</h4>
         <p>Die Untersuchung in Openchat dient dazu die technischen und didaktischen Voraussetzungen für die Anwendung
           von Large Language Models (LLMs) für das Lernen und Lehren zu ermitteln und herzustellen.</p>
         <h4>Erfasste und verarbeitete Daten</h4>
