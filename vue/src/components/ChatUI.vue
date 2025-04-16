@@ -1,5 +1,5 @@
 <template>
-    <div id="chat">
+    <div id="chat" class="container-fluid px-2 py-3">
         <div class="w-100">
             <div v-for="(m, index) in messages" :key="m.id || index">
                 <article :class="m.author == 'bot' ? 'chat-message ml-auto user-bot' : 'chat-message user-human'">
@@ -117,10 +117,6 @@ export default Vue.extend({
   overflow: hidden;
 }
 
-#chat {
-    display: block;
-    width: 500px;
-}
 
 #chat .chat-textarea {
     min-height: 40px;
@@ -144,10 +140,12 @@ export default Vue.extend({
 
 #chat .chat-message {
     display: block;
-    padding: 8px 10px;
+    /*padding: 8px 10px;*/
     font-size: 1.1em;
-    margin-bottom: 5px;
-    width: 500px;
+    padding: 1rem;
+    border-radius: 5px;
+    margin-bottom: 0.75rem;
+    word-break: break-word;
 }
 
 .user-bot {
@@ -155,8 +153,8 @@ export default Vue.extend({
 }
 
 .user-human {
-    background-color: #c2c9d6;
-    border-color: 0 solid #e3e3e3;
+    background-color: #d9edf7;
+    border-color: 0 solid #d9edf7;
 }
 
 .message-actions {
@@ -180,4 +178,5 @@ export default Vue.extend({
 .message-bot:hover .message-actions * {
     display: inline;
 }
+
 </style>
