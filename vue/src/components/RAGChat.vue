@@ -18,7 +18,9 @@
             ></i>
           </button>
         </h3>
-  
+        <div id="intro">
+            {{  $store.getters.getPluginSettings.intro }}
+        </div> 
         <div id="settings-panel" v-if="$store.getters.showSettings">
           <RAGChatSettings :documents="documents" />
         </div>

@@ -16,6 +16,7 @@ export const store = new Vuex.Store({
 
     // plugin context
     pluginSettings: {
+      intro: null,
       hostname: null,
       model: null,
       prompttemplate: null,
@@ -28,7 +29,8 @@ export const store = new Vuex.Store({
     courseID: null,
     courseModuleID: null,
     pageInstanceId: null,
-    ragWebserviceHost: "http://localhost:5000/",
+    ragWebserviceHost: "http://localhost:5000/", // FixMe: remove
+    ragWebserviceAPIKey: '',
 
     llmModelList: []
     
@@ -49,6 +51,7 @@ export const store = new Vuex.Store({
     },
     setPluginSettings: function (state, settings) {
       //Object.assign(state.pluginSettings, settings); 
+      state.pluginSettings.intro = settings.intro;
       state.pluginSettings.hostname = settings.hostname;
       state.pluginSettings.model = settings.model;
       state.pluginSettings.prompttemplate = settings.prompttemplate;
@@ -62,6 +65,9 @@ export const store = new Vuex.Store({
     },
     setRAGWebserviceHost(state, name) {
       state.ragWebserviceHost = name;
+    },
+    setRAGWebserviceHost(state, key) {
+      state.ragWebserviceAPIKey = key;
     },
     setLLMModelList(state, list){
       state.llmModelList = list

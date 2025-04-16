@@ -13,26 +13,29 @@ class mod_openchat_mod_form extends moodleform_mod {
         $mform = $this->_form;
 
         // General settings.
-        $mform->addElement('text', 'name', get_string('name', 'mod_openchat'), ['size' => '64']);
-        $mform->setType('name', PARAM_CLEANHTML);
+        $mform->addElement('text', 'name', get_string('title', 'mod_openchat'), ['size' => '64']);
+        $mform->setType('name', PARAM_TEXT);
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
 
-        // Standard intro elements.
-        $this->standard_intro_elements();
+        
+        $mform->addElement('textarea', 'intro', get_string('intro', 'mod_openchat'), [
+            'wrap' => 'virtual', 
+            'rows' => 5, 
+            'cols' => 50
+        ]);
+        $mform->setType('intro', PARAM_TEXT);
+        
 
-        // Custom fields.
-        $mform->addElement('text', 'hostname', get_string('hostname', 'mod_openchat'), ['size' => '64']);
-        $mform->setType('hostname', PARAM_TEXT);
-
-        $mform->addElement('text', 'apikey', get_string('apikey', 'mod_openchat'), ['size' => '64']);
-        $mform->setType('apikey', PARAM_TEXT);
-
-        $mform->addElement('textarea', 'prompttemplate', get_string('prompttemplate', 'mod_openchat'), 'wrap="virtual" rows="5" cols="50"');
+        $mform->addElement('textarea', 'prompttemplate', get_string('prompttemplate', 'mod_openchat'), [
+            'wrap' => 'virtual', 
+            'rows' => 5, 
+            'cols' => 50
+        ]);
         $mform->setType('prompttemplate', PARAM_TEXT);
 
-        $mform->addElement('text', 'model', get_string('model', 'mod_openchat'), ['size' => '64']);
-        $mform->setType('model', PARAM_TEXT);
+        //$mform->addElement('text', 'model', get_string('model', 'mod_openchat'), ['size' => '64']);
+        //$mform->setType('model', PARAM_TEXT);
 
         // Standard coursemodule elements.
         $this->standard_coursemodule_elements();
