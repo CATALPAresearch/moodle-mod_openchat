@@ -1,31 +1,42 @@
 <template>
-    <div id="container" class="content">
-        <div class="chat-header mb-3 w100">
-            <h3 class="d-flex justify-content-between* align-items-center* mb-3">
-                Dokumenten-Chat
-                <i class="fa fa-cog ml-3 mt-1 settings-icon" style="font-size:0.8em; color:#555;"
-                    @click="$store.commit('toggleShowSettings', 1)"></i>
-            </h3>
-
-            <RAGChatSettings 
-                v-if="$store.getters.showSettings" 
-                :documents="documents" 
-                />
-
+    <div id="container" class="content" role="main">
+      <div class="chat-header mb-3 w100">
+        <h3 class="d-flex justify-content-betweenx xalign-items-center mb-3">
+          <span id="chat-title">Dokumenten-Chat</span>
+          <button
+            @click="$store.commit('toggleShowSettings', 1)"
+            class="btn btn-link settings-icon-button"
+            aria-controls="settings-panel"
+            :aria-expanded="$store.getters.showSettings.toString()"
+            aria-label="Einstellungen öffnen oder schließen"
+            title="Einstellungen"
+            style="margin-top:0px;"
+          >
+            <i
+              class="fa fa-cog settings-icon"
+              aria-hidden="true"
+            ></i>
+          </button>
+        </h3>
+  
+        <div id="settings-panel" v-if="$store.getters.showSettings">
+          <RAGChatSettings :documents="documents" />
         </div>
-        
-
-        <ChatUI 
-            :messages="messages"
-            @requestChatResponse="requestDocumentChat" 
-            />
+      </div>
+  
+      <ChatUI
+        :messages="messages"
+        @requestChatResponse="requestDocumentChat"
+        aria-labelledby="chat-title"
+      />
     </div>
-</template>
+  </template>
+  
 
 <script lang="ts">
 import Vue from "vue";
 import { mapGetters } from 'vuex'
-import RAGChatSettings from "./RAGChatSettings.vue";
+import RAGChatSettings from "./ChatSettings.vue";
 import ChatUI from "./ChatUI.vue";
 
 export default Vue.extend({
@@ -37,6 +48,7 @@ export default Vue.extend({
     data() {
         return {
             messages: [],
+            messageId: 0,
             documents: [],
             document_index: [],
             document_filter: [],
@@ -49,6 +61,10 @@ export default Vue.extend({
             rag_webservice_host: 'getRAGWebserviceHost',
             pluginSettings: 'getPluginSettings',
         }),
+        getNextMessageId: function(){
+            this.messageId++;
+            return this.messageId;
+        },
         requestDocumentChat: async function (message) {
             if(this.$store.getters.getChatModus !== 'document-chat'){
                 return;
@@ -58,9 +74,9 @@ export default Vue.extend({
             
             let _this = this;
             //@ts-ignore
-            this.messages.push({ author: "user", message: message });
+            this.messages.push({ author: "user", message: message, id: this.getNextMessageId() });
             //@ts-ignore
-            let message_pos = this.messages.push({ author: "bot", message: "" });
+            let message_pos = this.messages.push({ author: "bot", message: "", id: this.getNextMessageId() });
 
             // default
             let url = this.$store.getters.getRAGWebserviceHost + "llm/query_documents";
@@ -144,8 +160,13 @@ export default Vue.extend({
     margin: 0 auto;
 }
 
-.settings-icon:hover{
-    color:blue;
+.settings-icon {
+    font-size:1.5em; 
+    color:#555;
     cursor:pointer;
+}
+
+.settings-icon:hover{
+    color:#004c97;
 }
 </style>

@@ -1,32 +1,47 @@
 <template>
     <div id="chat">
         <div class="w-100">
-            <div v-for="m in messages" key="m">
-                <div :class="m.author == 'bot' ? 'chat-message ml-auto user-bot' : 'chat-message user-human'">
-                    <i v-if="m.message == ''" class="fa fa-spinner fa-spin"></i>
+            <div v-for="(m, index) in messages" :key="m.id || index">
+                <article :class="m.author == 'bot' ? 'chat-message ml-auto user-bot' : 'chat-message user-human'">
+                    <div v-if="m.message == ''" role="status" aria-live="polite" aria-atomic="true">
+                        <i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+                        <span class="sr-only">Nachricht wird geladen</span>
+                    </div>
                     <div>{{ m.message }}</div>
                     <div v-if="m.author == 'bot' && m.message != ''" class="message-actions">
-                        <font-awesome-icon v-if="!copied" @click="copyMessageToClipboard(m.message)" icon="copy" />
-                        <font-awesome-icon v-if="copied" icon="check" />
-                        <font-awesome-icon icon="thumbs-up" @click="sendRating('up', index)" />
-                        <font-awesome-icon icon="thumbs-down" @click="sendRating('down', index)" />
+                        <button type="button" aria-label="Antwort kopieren" title="Kopieren" v-if="!copied" @click="copyMessageToClipboard(m.message)">
+                            <i class="fa fa-copy" />
+                        </button>
+                        <span v-if="copied" aria-live="assertive" class="copied-feedback">
+                            <span class="sr-only">Nachricht wurde kopiert</span>
+                            <i class="fa fa-check" />
+                        </span>
+                        <button type="button" aria-label="Antwort positiv bewerten" title="Gefällt mir" @click="sendRating('up', index)">
+                            <i class="fa fa-thumbs-up" />
+                        </button>
+                        <button type="button" aria-label="Antwort negativ bewerten" title="Gefällt mir nicht" @click="sendRating('down', index)">
+                            <i class="fa fa-thumbs-down" />
+                        </button>
+                    </div>
+                </article>
+            </div>
+        </div>
+        <fieldset>
+            <legend class="sr-only">Neue Nachricht schreiben</legend>
+            <div class="w-100 chat-input">
+                <div>
+                    <label for="chatTextarea" class="sr-only">Gib deine Frage ein</label>
+                    <textarea ref="chatTextarea" class="w100 chat-textarea" v-model="chat_message"
+                        @keyup.enter="handleEnter" @input="resizeTextarea" placeholder="Frag etwas" role="textbox"/>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <i class="fa fa-dots" aria-hidden="true"></i>
+                        <button type="button" class="btn btn-primary" @click="handleChatMessage" :disabled="chat_message.length == 0">
+                            <i class="fa fa-arrow-up"></i>
+                        </button>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="w-100 chat-input">
-            <div>
-                <textarea ref="chatTextarea" class="w100 chat-textarea" v-model="chat_message"
-                    @keyup.enter="handleEnter" @input="resizeTextarea" placeholder="Frag etwas" />
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <i class="fa fa-dots"></i>
-                    <button class="btn btn-primary" @click="handleChatMessage" :disabled="chat_message.length == 0">
-                        <i class="fa fa-arrow-up"></i>
-                    </button>
-                </div>
-
-            </div>
-        </div>
+        </fieldset>
     </div>
 </template>
 
@@ -60,6 +75,9 @@ export default Vue.extend({
         handleChatMessage: function () {
             this.$emit('requestChatResponse', this.chat_message)
             this.chat_message = ""; // reset input field
+            this.$nextTick(() => {
+                this.$refs.chatTextarea.focus();
+            });
         },
         resizeTextarea: function () {
             const textarea = this.$refs.chatTextarea;

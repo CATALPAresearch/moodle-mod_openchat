@@ -1,8 +1,9 @@
 <template>
     <div>
-        m
+        This component is still under development
     </div>
 </template>
+
 <script lang="ts">
 import Vue from "vue";
 import { mapGetters } from 'vuex'

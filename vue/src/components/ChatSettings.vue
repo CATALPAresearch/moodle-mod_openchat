@@ -1,17 +1,21 @@
 <template>
     <div class="settings mb-3">
-        <i 
-            class="btn btn-link fa fa-close ml-3 mt-1 settings-icon" 
-            style="float:right; cursor: pointer; font-size:1em; color:#555;"
+       <button
+            type="button"
+            class="btn btn-link settings-icon"
             @click="$store.commit('toggleShowSettings', 1)"
+            aria-label="Einstellungen schließen"
+            style="float:right; cursor: pointer; font-size:1em; color:#555;"
             >
-        </i>
+            <i class="fa fa-close ml-3 mt-1 settings-icon" aria-hidden="true"></i>
+        </button>
         <h3 class="mb-3">Einstellungen</h3>
 
         <!-- Chat modus -->
         <div class="form-group">
             <h4>Chat-Modus</h4>
-            <div>
+            <fieldset>
+                <legend class="sr-only">Chat-Modus wählen</legend>
                 <label>
                     <input type="radio" value="llm-chat" v-model="chatmodus" @change="updateChatModus" />
                     LLM-Chat (Standard)
@@ -26,14 +30,14 @@
                     <input type="radio" value="srl-chat" v-model="chatmodus" @change="updateChatModus" />
                     SRL-Chat als Interview-Agent
                 </label>
-            </div>
+            </fieldset>
         </div>
         <hr>
         <!-- Settings for the document chat (RAG) -->
         <div v-if="chatmodus == 'document-chat'">
-            <h4>Dokumente für Dokumenten-Chat</h4>
+            <h4 id="doc-table-caption">Dokumente für Dokumenten-Chat</h4>
             <span v-if="documents.length > 0" class="bold">Ausgewählte Dokumente</span>
-            <table v-if="documents.length > 0" class="document-table">
+            <table v-if="documents.length > 0" class="document-table" aria-labelledby="doc-table-caption">
                 <thead>
                     <tr>
                         <th>Auswahl</th>
@@ -50,7 +54,14 @@
                         <td>{{ doc.file.name }}</td>
                         <td>{{ doc.activity_type }}</td>
                         <td>
-                            <i class="fa fa-trash delete-icon" @click="removeDocument(doc.id)"></i>
+                            <button
+                                type="button"
+                                class="delete-icon"
+                                @click="removeDocument(doc.id)"
+                                :aria-label="'Dokument'+ doc.file.name + 'löschen'"
+                                >
+                                <i class="fa fa-trash" aria-hidden="true"></i>
+                            </button>
                         </td>
                     </tr>
                 </tbody>
@@ -58,7 +69,7 @@
 
             <div class="mt-3">
                 <RAGupload @document_uploaded="addDocument"></RAGupload>
-                <span style="background-color: red">{{ error_msg }}</span>
+                <span style="background-color: red" aria-live="assertive">{{ error_msg }}</span>
             </div>
             <div hidden class="mt-3">
                 TODO: Ressource aus dem Kurs als Dokument hinzufügen; [todo: page,
@@ -68,7 +79,8 @@
         <hr>
         <!-- Standard settings for all chat modi -->
         <div class="form-group">
-            <h4 for="llmSelect">Auswahl des Sprachmodels</h4>
+            <h4>Verwendetes Sprachmodel</h4>
+            <label for="llmSelect" class="form-label">Wählen Sie ein Sprachmodell aus:</label>
             <select id="llmSelect" class="form-control w50" v-model="model" @change="updateModel">
                 <option disabled value="">-- Bitte wählen --</option>
                 <option v-for="(m, index) in $store.getters.getLLMModelList" :key="m" :value="m">
