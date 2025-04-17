@@ -42,4 +42,13 @@ $functions = array(
         'ajax'        => true,
         'loginrequired' => true
     ),
+    'mod_openchat_triggerEvent' => array(
+        'classname'   => 'mod_openchat_event',
+        'methodname'  => 'triggerEvent',
+        'classpath'   => 'mod/openchat/ws/event.php',
+        'description' => 'Trigger an event',
+        'type'        => 'read',
+        'ajax'        => 'write',
+        'loginrequired' => true
+    ),
 );

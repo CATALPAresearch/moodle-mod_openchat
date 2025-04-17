@@ -33,6 +33,7 @@ $course = $DB->get_record('course', ['id' => $coursemodule->course], '*', MUST_E
 
 // Setup context and permissions.
 require_course_login($course, true, $coursemodule);
+
 $context = context_module::instance($coursemodule->id);
 require_capability('mod/openchat:view', $context);
 
@@ -50,18 +51,25 @@ $PAGE->requires->js_call_amd('mod_openchat/app-lazy', 'initOpenChat', [
     'contextid' => $context->id,
     'isAdmin' => $isadmin,
     'page_instance_id' => $page->id, // use actual instance ID
-    //'hostname' => $page->hostname,
+    'RAGenabled' => get_config('mod_openchat', 'enable_rag'),
+    'RAGhostname' => get_config('mod_openchat', 'rag_webservice_host'),
+    'RAGapiKey' => get_config('mod_openchat', 'rag_webservice_apikey')
 ]);
 
+
 // Output page.
+$PAGE->activityrecord->intro = '';
 echo $OUTPUT->header();
 echo html_writer::div('', 'OpenChatApp', ['id' => 'OpenChatApp']);
 echo $OUTPUT->footer($course);
 
-// Logging
-/*
-\mod_openchat\event\course_module_viewed::create([
-    'objectid' => $page->id,
-    'context' => $context,
-])->trigger();
-*/
+$payload = array(
+    'context' => \context_system::instance(),
+    'courseid' => 22,
+    'userid' => 22,
+    'other' => array(
+        'value' => 44,
+    ),
+);
+//$event = \mod_openchat\event\view_openchat_event::create($payload);
+//$event->trigger();

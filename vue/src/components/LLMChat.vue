@@ -12,10 +12,7 @@
             title="Einstellungen"
             style="margin-top:0px;"
           >
-            <i
-              class="fa fa-cog settings-icon"
-              aria-hidden="true"
-            ></i>
+            <font-awesome-icon class="settings-icon" icon="cog" aria-hidden="true"/>
           </button>
         </h3>
       <div id="intro">
@@ -33,6 +30,7 @@ import Vue from "vue";
 import { mapGetters } from 'vuex'
 import RAGChatSettings from "./ChatSettings.vue";
 import ChatUI from "./ChatUI.vue";
+import Communication from "../classes/communication";
 
 export default Vue.extend({
   name: "LLMChat",
@@ -66,7 +64,13 @@ export default Vue.extend({
       }
       
       //@ts-ignore
-      this.messages.push({ author: "user", message: message, id: this.getNextMessageId() });
+      let new_message = { author: "user", message: message, id: this.getNextMessageId() };
+      this.messages.push(new_message);
+      Communication.webservice("triggerEvent", {
+        cmid: _this.$store.getters.getCMID,
+        action: "llm_request",
+        value: JSON.stringify(new_message),
+      });
       //@ts-ignore
       let message_pos = this.messages.push({ author: "bot", message: "", id: this.getNextMessageId() });
       //let message_pos = this.messages.length;
@@ -79,7 +83,7 @@ export default Vue.extend({
       //postData.append('pageinstanceid', this.pageInstanceId);
 
 
-      const url = M.cfg.wwwroot + "/mod/openchat/llm_stream2.php";
+      const url = M.cfg.wwwroot + "/mod/openchat/llm_stream.php";
 
       const response = await fetch(url, {
         method: 'POST',
@@ -122,6 +126,11 @@ export default Vue.extend({
           }
         }
       }
+      Communication.webservice("triggerEvent", {
+          cmid: _this.$store.getters.getCMID,
+          action: "llm_response",
+          value: JSON.stringify(_this.messages[message_pos - 1]),
+        });
 
       console.log("Final response:", completeText);
       //this.messages[message_pos - 1].message = completeText;

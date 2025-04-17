@@ -1,6 +1,9 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import communication from "../classes/communication";
+import moodleAjax from 'core/ajax';
+import moodleStorage from 'core/localstorage';
+
 
 Vue.use(Vuex);
 
@@ -14,6 +17,8 @@ export const store = new Vuex.Store({
       userId: null,
     },
 
+    strings: {},
+
     // plugin context
     pluginSettings: {
       intro: null,
@@ -23,7 +28,7 @@ export const store = new Vuex.Store({
       chatmodus: null,
     },
     informedConsentAgreement: false,
-    
+
     // system context
     systemName: null,
     courseID: null,
@@ -33,20 +38,20 @@ export const store = new Vuex.Store({
     ragWebserviceAPIKey: '',
 
     llmModelList: []
-    
+
   },
   mutations: {
-    setDocuments: function(state, docs){
+    setDocuments: function (state, docs) {
       state.documents = docs;
     },
-    setSystemContext: function(state, arr){
+    setSystemContext: function (state, arr) {
       state.systemName = arr['systemName'];
       state.courseID = arr['courseID'];
     },
-    toggleShowSettings: function(state, id){
+    toggleShowSettings: function (state, id) {
       state.showSettings = !state.showSettings;
     },
-    setCourseModuleID: function(state, id) {
+    setCourseModuleID: function (state, id) {
       state.courseModuleID = id;
     },
     setPluginSettings: function (state, settings) {
@@ -69,7 +74,7 @@ export const store = new Vuex.Store({
     setRAGWebserviceHost(state, key) {
       state.ragWebserviceAPIKey = key;
     },
-    setLLMModelList(state, list){
+    setLLMModelList(state, list) {
       state.llmModelList = list
     },
     setModel(state, name) {
@@ -81,34 +86,37 @@ export const store = new Vuex.Store({
     setPageInstanceId(state, name) {
       state.pageInstanceId = name;
     },
-    setInformedConsentAgreement: function(state, value){
+    setInformedConsentAgreement: function (state, value) {
       state.informedConsentAgreement = value;
       this.dispatch("updatePreference");
     },
-    setAdmin: function(state, value){
+    setAdmin: function (state, value) {
       state.isAdmin = value;
     },
-    setChatModus: function(state, value){
+    setChatModus: function (state, value) {
       state.pluginSettings.chatmodus = value;
-    }
+    },
+    setStrings(state, strings) {
+			state.strings = strings;
+		},
   },
   getters: {
-    getSystemContext: function(state){
+    getSystemContext: function (state) {
       return {
         systemName: state.systemName,
         courseID: state.courseID
       };
     },
-    showSettings: function(state){
+    showSettings: function (state) {
       return state.showSettings;
     },
-    getIsAdmin: function(state){
+    getIsAdmin: function (state) {
       return state.isAdmin;
     },
-    getChatModus: function(state){
+    getChatModus: function (state) {
       return state.pluginSettings.chatmodus;
     },
-    getCMID: function(state){
+    getCMID: function (state) {
       return state.courseModuleID;
     },
     getPluginSettings: function (state) {
@@ -120,7 +128,7 @@ export const store = new Vuex.Store({
     getRAGWebserviceHost: function (state) {
       return state.ragWebserviceHost
     },
-    getLLMModelList(state){
+    getLLMModelList(state) {
       return state.llmModelList;
     },
     getModel: function (state) {
@@ -135,7 +143,7 @@ export const store = new Vuex.Store({
     getPageInstanceId: function (state) {
       return state.pageInstanceId;
     },
-    getInformedConsentAgreement: function(state){
+    getInformedConsentAgreement: function (state) {
       return state.informedConsentAgreement;
     }
   },
@@ -163,17 +171,47 @@ export const store = new Vuex.Store({
           cmid: context.getters.getCMID,
           settings: JSON.stringify(context.getters.getPluginSettings)
         });
-  
+
         if (!response.success) {
           console.error(response);
           throw new Error("@store: Failed to update plugin settings. Webservice return ressult. ");
-        }else{
+        } else {
           console.log('Stored settings', context.getters.getPluginSettings)
         }
-  
+
       } catch (error) {
         console.error(error);
         throw new Error("@store: Failed to update plugin settings. Webservice not reachable. ");
+      }
+    },
+    /**
+     * Fetches the i18n data for the current language.
+     *
+     * @param context
+     * @returns {Promise<void>}
+     */
+    async loadComponentStrings(context) {
+      const html = document.getElementsByTagName('html');
+      const lang = html[0].getAttribute('lang').replace(/-/g, '_');
+      const cacheKey = 'mod_openchat/strings/' + lang;
+      const cachedStrings = moodleStorage.get(cacheKey);
+      if (cachedStrings) {
+        context.commit('setStrings', JSON.parse(cachedStrings));
+      } else {
+        const request = {
+          methodname: 'core_get_component_strings',
+          args: {
+            'component': 'mod_openchat',
+            lang,
+          },
+        };
+        const loadedStrings = await moodleAjax.call([request])[0];
+        let strings = {};
+        loadedStrings.forEach((s) => {
+          strings[s.stringid] = s.string;
+        });
+        context.commit('setStrings', strings);
+        moodleStorage.set(cacheKey, JSON.stringify(strings));
       }
     },
     loadPreference: async function (context) {
@@ -219,7 +257,7 @@ export const store = new Vuex.Store({
       let models = data.models.map(m => m.name);
       context.commit('setLLMModelList', models);
     },
-    loadRAGDocuments: async function(context) {
+    loadRAGDocuments: async function (context) {
       // Loads documents already indexed for RAG
       const sc = context.getters.getSystemContext;
       const payload = {

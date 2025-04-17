@@ -1,80 +1,8 @@
 <template>
-  <div>
-    <div id="container" class="container-fluid consent mt-3">
-      <div class="row justify-content-center">
-        <div class="col-12 col-md-10 col-lg-8">
-          <div
-            v-if="$store.getters.getInformedConsentAgreement != 'yes' && $store.getters.getInformedConsentAgreement != 'no'"
-            class="mb-3 alert alert-primary" role="alert">
-            <h5>Diese Anwendung ist Teil der KI-Experimentierumgebung und erfordert Ihre Einwilligung.</h5>
-            <button @click="$store.commit('setInformedConsentAgreement', 'no')"
-              class="btn btn-primary btn-block">Einwilligungserklärung jetzt anzeigen</button>
-          </div>
-          <div v-if="$store.getters.getInformedConsentAgreement == 'no'" class="alert alert-info" role="dialog">
-            <h5>Einwilligung in die Nutzung von Openchat</h5>
-            <h4>Zweck der Untersuchung in OpenChat</h4>
-            <p class="lead text-wrap">Die Untersuchung in Openchat dient dazu die technischen und didaktischen Voraussetzungen für die Anwendung
-              von Large Language Models (LLMs) für das Lernen und Lehren zu ermitteln und herzustellen.</p>
-            <h4>Erfasste und verarbeitete Daten</h4>
-            <p class="lead text-wrap">
-              Während der Nutzung von Openchat werden Interaktionen wie Klicks, Texteingaben und die für den Dokument-Chat
-              bereitgestellten Dokumente (bspw. PDFs, Moodle-Ressourcen) sowie die Antworten der Sprachmodelle in
-              pseudonymisierter Form erfasst.
-              Bitte laden Sie keine Dokumente hoch, die personenbezogene Daten Dritter enthalten. Machen Sie keine Eingaben,
-              die personenbezogene Daten Dritter enthalten.
-              Nach der Erfassung und Speicherung dieser Daten ist eine Zuordnung von Pseudonym und Nutzenden oder Moodle
-              Nutzer-ID nicht mehr möglich.</p>
-            <h4>Verwendung der Daten</h4>
-            <p class="lead text-wrap">
-              Die erfassten Daten werden verwendet, um den technischen Betrieb und Benutzerfreundlichkeit von Openchat und
-              den verbundenen Diensten (bspw. RAG-Webservice, FLEXI LLM-Server) zu überwachen, zu analysieren und zu
-              verbessern.
-              Selbige Daten werden auch genutzt und wissenschaftliche Fragestellungen zur Nutzung und Qualität von
-              Lehrangeboten im Zusammenhang mit Sprachmodellen zu beantworten.
-              Die Verarbeitung erfolgt auf Grundlage Ihrer freiwilligen Einwilligung (Art. 6 Abs. 1 lit. a DSGVO).
-              Ihre Einwilligung kann jederzeit mit Wirkung für die Zukunft widerrufen werden.
-
-              Die Verarbeitung erfolgt ausschließlich auf Servern der FernUniversität im Einklang mit den geltenden
-              Datenschutzbestimmungen.
-            </p>
-            <h4>Rechte</h4>
-            <p class="lead text-wrap">
-              Nutzenden Studierenden und Lehrende sind nicht verpflichtet Openchat zu nutzen. Die Einwilligung in die
-              Erfassung und Verarbeitung der oben genannten Daten erfolgt freiwillig durch eine Zustimmung (opt-in). Die
-              Einwilligung kann jeder Zeit widerrufen werden.
-              Lehrende könne Openchat freiwillig im Rahmen eines Moodle-Kurses einsetzen und den Kursteilnehmenden anbieten.
-              Durch Löschung der Openchat-Aktivität aus dem Kurs kann die Nutzung durch Studierende jeder Zeit unterbunden
-              werden.
-              Daten von Nutzenden können weder herausgegeben, noch gelöscht werden, da die Daten pseudonym erfasst werden
-              und ein Bezug zu einer Person nicht herstellbar ist.
-            </p>
-            <h4>Verantwortlichkeiten</h4>
-            <p class="lead text-wrap">
-              Verantwortlich für die Datenverarbeitung ist die FernUniversität in Hagen, Universitätsstraße 11, 58097 Hagen.
-              Bei Fragen wenden Sie sich bitte an den <a href="mailto:datenschutzbeauftragter@fernuni-hagen.de">Behördlichen Datenschutzbeauftragten</a>.
-              Technische Fragen beantworten Ihnen <a href="mailto:niels.seidel@fernuni-hagen.de">Dr. Niels Seidel</a> und <a href="mailto:torsten.zesch@fernuni-hagen">Prof. Dr. Torsten
-              Zesch</a>.
-            </p>
-            <hr>
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-stretch mb-3">
-              <button 
-                type="button" 
-                @click="$store.commit('setInformedConsentAgreement', 'yes')" 
-                class="btn btn-primary mb-2 mb-md-0 mr-md-3 w-100 w-md-auto"
-                aria-label="Einwilligung erteilen"
-                >
-                Ja, ich erteile die Einwilligung zur Erhebung und Verarbeitung meiner Daten in Openchat!
-              </button>
-              <button 
-                type="button" @click="$store.commit('setInformedConsentAgreement', 'none')" 
-                class="btn btn-outline-secondary w-100 w-md-auto"
-                aria-label="Einwilligung nicht erteilen"
-                >
-                Nein, ich willige nicht ein.
-              </button>
-            </div>
-          </div>
-        </div>
+  <div v-cloak>
+    <div id="container" class="container-fluid consent mt-3" v-cloak>
+      <div class="row justify-content-center" v-cloak>
+        <ChatInformedConsent></ChatInformedConsent>
       </div>
     </div>
     <div v-if="$store.getters.getInformedConsentAgreement == 'yes'">
@@ -95,17 +23,46 @@
 </template>
 
 <script>
+import ChatInformedConsent from "./components/ChatInformedConsent.vue";
+import Communication from "./classes/communication";
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faThumbsUp, faThumbsDown, faCopy, faCog, faCheck, faSpinner, faArrowUp, faCommentDots, faTrash, faClose } from '@fortawesome/free-solid-svg-icons'
+//import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome' // why don't we need this?
+
+library.add(faThumbsUp)
+library.add(faThumbsDown)
+library.add(faCopy)
+library.add(faCog)
+library.add(faCheck)
+library.add(faSpinner)
+library.add(faCommentDots)
+library.add(faArrowUp)
+library.add(faTrash)
+library.add(faClose)
+
 export default {
   name: "ChatApp",
+  components: {
+    ChatInformedConsent: ChatInformedConsent
+  },
   data() {
     return {
     };
+  },
+  mounted: function(){
+    var _this = this;
+    Communication.webservice("triggerEvent", {
+      cmid: _this.$store.getters.getCMID,
+      action: "view_openchat",
+      value: JSON.stringify({opened: 'OpenChat'}),
+    });
   },
   methods: {}
 };
 </script>
 
 <style scoped>
+
 .content {
   border: none;
   max-width: 830px;
@@ -148,5 +105,10 @@ nav {
 .active {
   background-color: #007bff;
   color: white;
+}
+
+
+[v-cloak] .v-cloak--hidden{
+  display: none !important;
 }
 </style>

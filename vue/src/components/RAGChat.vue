@@ -12,10 +12,7 @@
             title="Einstellungen"
             style="margin-top:0px;"
           >
-            <i
-              class="fa fa-cog settings-icon"
-              aria-hidden="true"
-            ></i>
+            <font-awesome-icon class="settings-icon" icon="cog" aria-hidden="true"/>
           </button>
         </h3>
         <div id="intro">
@@ -40,6 +37,7 @@ import Vue from "vue";
 import { mapGetters } from 'vuex'
 import RAGChatSettings from "./ChatSettings.vue";
 import ChatUI from "./ChatUI.vue";
+import Communication from "../classes/communication";
 
 export default Vue.extend({
     name: "RAGChat",
@@ -76,7 +74,13 @@ export default Vue.extend({
             
             let _this = this;
             //@ts-ignore
-            this.messages.push({ author: "user", message: message, id: this.getNextMessageId() });
+            let new_message = { author: "user", message: message, id: this.getNextMessageId() };
+            this.messages.push(new_message);
+            Communication.webservice("triggerEvent", {
+                cmid: _this.$store.getters.getCMID,
+                action: "rag_request",
+                value: JSON.stringify(new_message),
+            });
             //@ts-ignore
             let message_pos = this.messages.push({ author: "bot", message: "", id: this.getNextMessageId() });
 
@@ -127,6 +131,11 @@ export default Vue.extend({
                         _this.messages[message_pos - 1].message = _this.messages[message_pos - 1].message + res;
                     }
                 }
+                Communication.webservice("triggerEvent", {
+                    cmid: _this.$store.getters.getCMID,
+                    action: "rag_response",
+                    value: JSON.stringify(_this.messages[message_pos - 1]),
+                });
             } catch (error) {
                 console.error("Error fetching streaming data:", error);
             }
