@@ -2,13 +2,13 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import LLMChat from '../components/LLMChat.vue';
 import RAGChat from '../components/RAGChat.vue';
-import SRLChat from '../components/SRLChat.vue';
+import AgentChat from '../components/AgentChat.vue';
 
 Vue.use(VueRouter); // ✅ Important: Use VueRouter before creating the instance
 
 const routes = [
-  { path: '/', redirect: '/srl-chat' }, // Default route
-  { path: '/srl-chat', component: SRLChat},
+  { path: '/', redirect: '/llm-chat' }, // Default route
+  { path: '/agent-chat', component: AgentChat},
   { path: '/document-chat', component: RAGChat },
   { path: '/llm-chat', component: LLMChat }
 ];

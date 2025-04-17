@@ -27,7 +27,7 @@
                 </label>
                 <br>
                 <label>
-                    <input type="radio" value="srl-chat" v-model="chatmodus" @change="updateChatModus" />
+                    <input type="radio" value="agent-chat" v-model="chatmodus" @change="updateChatModus" />
                     SRL-Chat als Interview-Agent
                 </label>
             </fieldset>

@@ -15,6 +15,9 @@ function initOpenChat(
   contextid,
   isAdmin,
   page_instance_id,
+  RAGenabled,
+  RAGhostname,
+  RAGapiKey,
 ) {
   
   store.commit("setPageInstanceId", page_instance_id);
@@ -25,8 +28,11 @@ function initOpenChat(
   store.commit("setCourseModuleID", course_module_id);
   store.commit("setPageInstanceId", page_instance_id)
   store.commit("setContextID", contextid);
+  store.commit('setRAGWebserviceHost', RAGhostname)
   store.dispatch("loadPluginSettings");
   store.dispatch("loadPreference");
+  store.dispatch("loadComponentStrings");
+  
   //store.dispatch("loadRAGDocuments");
   
 

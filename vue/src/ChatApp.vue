@@ -9,7 +9,7 @@
       <nav hidden class="content mb-3">
         <router-link to="/llm-chat" class="tab" active-class="active">LLM-Chat</router-link>
         <router-link to="/document-chat" class="tab" active-class="active">Dokumenten-Chat</router-link>
-        <router-link to="/srl-chat" class="tab" active-class="active">SRL-Interview</router-link>
+        <router-link to="/agent-chat" class="tab" active-class="active">SRL-Interview</router-link>
       </nav>
       <router-view></router-view>
     </div>
