@@ -4,23 +4,23 @@
             <div v-for="(m, index) in messages" :key="m.id || index">
                 <article :class="m.author == 'bot' ? 'chat-message ml-auto user-bot' : 'chat-message user-human'">
                     <div v-if="m.message == ''" role="status" aria-live="polite" aria-atomic="true">
-                        <i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+                        <font-awesome-icon class="fa-spin" icon="spinner" aria-hidden="true"/>
                         <span class="sr-only">Nachricht wird geladen</span>
                     </div>
                     <div>{{ m.message }}</div>
                     <div v-if="m.author == 'bot' && m.message != ''" class="message-actions">
-                        <button type="button" aria-label="Antwort kopieren" title="Kopieren" v-if="!copied" @click="copyMessageToClipboard(m.message)">
-                            <i class="fa fa-copy" />
+                        <button type="button" class="btn btn-link" aria-label="Antwort kopieren" title="Kopieren" v-if="!copied" @click="copyMessageToClipboard(m.message, index)">
+                            <font-awesome-icon icon="copy" />
                         </button>
                         <span v-if="copied" aria-live="assertive" class="copied-feedback">
                             <span class="sr-only">Nachricht wurde kopiert</span>
-                            <i class="fa fa-check" />
+                            <font-awesome-icon icon="check" />
                         </span>
-                        <button type="button" aria-label="Antwort positiv bewerten" title="Gefällt mir" @click="sendRating('up', index)">
-                            <i class="fa fa-thumbs-up" />
+                        <button type="button" class="btn btn-link" aria-label="Antwort positiv bewerten" title="Gefällt mir" @click="sendRating('up', index)">
+                            <font-awesome-icon icon="thumbs-up" />
                         </button>
-                        <button type="button" aria-label="Antwort negativ bewerten" title="Gefällt mir nicht" @click="sendRating('down', index)">
-                            <i class="fa fa-thumbs-down" />
+                        <button type="button" class="btn btn-link" aria-label="Antwort negativ bewerten" title="Gefällt mir nicht" @click="sendRating('down', index)">
+                            <font-awesome-icon icon="thumbs-down" />
                         </button>
                     </div>
                 </article>
@@ -34,9 +34,10 @@
                     <textarea ref="chatTextarea" class="w100 chat-textarea" v-model="chat_message"
                         @keyup.enter="handleEnter" @input="resizeTextarea" placeholder="Frag etwas" role="textbox"/>
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <i class="fa fa-dots" aria-hidden="true"></i>
+                        <font-awesome-icon hidden icon="comment-dots" aria-hidden="true"/>
+                        
                         <button type="button" class="btn btn-primary" @click="handleChatMessage" :disabled="chat_message.length == 0">
-                            <i class="fa fa-arrow-up"></i>
+                            <font-awesome-icon icon="arrow-up" />
                         </button>
                     </div>
                 </div>
@@ -47,7 +48,8 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
+import Communication from "../classes/communication";
 
 export default Vue.extend({
     name: "ChatUI",
@@ -60,6 +62,9 @@ export default Vue.extend({
             error_msg: '',
             copied: false,
         };
+    },
+    computed: {
+        ...mapState(['strings']),
     },
     mounted: function () { },
     methods: {
@@ -84,24 +89,32 @@ export default Vue.extend({
             textarea.style.height = "auto";  // Reset height
             textarea.style.height = textarea.scrollHeight + "px"; // Set height dynamically
         },
-        copyMessageToClipboard: function (text) {
-            //const el = this.$refs.copyTarget;
-            //const text = el.innerText || el.textContent;
-
+        copyMessageToClipboard: function (text, message_index) {
+            var _this = this;
             navigator.clipboard.writeText(text).then(() => {
                 this.copied = true;
                 setTimeout(() => (this.copied = false), 2000);
             }).catch(err => {
                 console.error('Failed to copy:', err);
             });
+            Communication.webservice("triggerEvent", {
+                cmid: _this.$store.getters.getCMID,
+                action: "copy_response",
+                value: JSON.stringify({copied: text, index: message_index}),
+            });
         },
         sendRating: function (rating, message_index) {
+            var _this = this;
             let params = {
                 request: this.messages[message_index - 1],
                 response: this.messages[message_index],
                 rating: rating,
             };
-            // TODO
+            Communication.webservice("triggerEvent", {
+                cmid: _this.$store.getters.getCMID,
+                action: "rate_response_" + rating == 'up' ? 'positive' : 'negative',
+                value: JSON.stringify({index: message_index}),
+            });
         }
     },
 });

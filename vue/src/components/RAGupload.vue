@@ -2,7 +2,9 @@
     <div>
         <label class="file-upload">
             <div class="w50 filename-container">
-                <span v-if="isProcessing"><i class="fa fa-spinner fa-spin"></i> Indexierung läuft: </span>
+                <span v-if="isProcessing">
+                    <font-awesome-icon class="fa-spin" icon="spinner" aria-hidden="true"/>
+                    Indexierung läuft: </span>
                 <span v-if="selectedFile">{{ selectedFile.name }}</span>
             </div>
             <div aria-live="polite" class="sr-only">

@@ -7,7 +7,7 @@
             aria-label="Einstellungen schließen"
             style="float:right; cursor: pointer; font-size:1em; color:#555;"
             >
-            <i class="fa fa-close ml-3 mt-1 settings-icon" aria-hidden="true"></i>
+            <font-awesome-icon class="ml-3 mt-1 settings-icon" icon="close" aria-hidden="true"/>
         </button>
         <h3 class="mb-3">Einstellungen</h3>
 
@@ -60,7 +60,7 @@
                                 @click="removeDocument(doc.id)"
                                 :aria-label="'Dokument'+ doc.file.name + 'löschen'"
                                 >
-                                <i class="fa fa-trash" aria-hidden="true"></i>
+                                <font-awesome-icon icon="trash" aria-hidden="true"/>
                             </button>
                         </td>
                     </tr>
