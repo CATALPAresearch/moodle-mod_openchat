@@ -194,6 +194,7 @@ This software uses the following open source packages:
 * [https://moodle.org/plugins/block_openai_chat](block_openai_chat)
 * [https://moodle.org/plugins/block_ai_chat](block_ai_chat)
 * [https://moodle.org/plugins/tiny_ai](tiny_ai)
+* AI subsystem in Moodle v4.5 can use [https://docs.moodle.org/405/en/Ollama](Ollama as an AI API provider)
 <!--
 https://moodle.org/plugins/local_ai_manager
 https://moodle.org/plugins/block_ai_control
