@@ -11,6 +11,7 @@
     "watch-hot": "cross-env webpack-dev-server --mode development --hot --inline --progress",
     "build": "NODE_OPTIONS=--openssl-legacy-provider cross-env webpack --mode production --progress --hide-modules",
     "tag-latest": "git tag -d latest && git push --delete github latest && git tag latest && git push github latest",
+    "sniffer": "phpcbf --standard=moodle ../* && phpcs --standard=moodle ../*",
     "nodemon": "nodemon"
   },
   "dependencies": {

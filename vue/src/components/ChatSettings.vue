@@ -93,6 +93,7 @@
 
 <script>
 import RAGupload from "./RAGupload.vue";
+import Communication from "../classes/communication";
 import { mapGetters } from 'vuex'
 
 export default {
@@ -128,8 +129,15 @@ export default {
                 selected: "selected",
             });
         },
-        removeDocument: function (activity_id) {
-            this.documents = this.documents.filter((doc) => doc.id !== activity_id);
+        removeDocument: function (document_id) {
+            let _this = this;
+            // remove document from Moodle file storage 
+            let doc = this.documents.filter((doc) => doc.id == document_id);
+            Communication.webservice("document_delete", {
+                cmid: _this.$store.getters.getCMID,
+                filename: doc.file.name
+            });
+            this.documents = this.documents.filter((doc) => doc.id !== document_id);
         },
         updateChatModus: function () {
             this.$store.commit("setChatModus", this.chatmodus);
@@ -140,6 +148,19 @@ export default {
             this.$store.commit("setModel", this.model);
             this.$store.dispatch("updatePluginSettings");
         },
+        fetchUploadedFiles: async function(cmid) {
+            const response = await fetch(M.cfg.wwwroot + '/lib/ajax/service.php?sesskey=' + M.cfg.sesskey, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify([{
+                methodname: 'mod_openchat_list_files',
+                args: { cmid }
+                }])
+            });
+
+            const result = await response.json();
+            return result[0].data || [];
+        }
     },
 
     computed: {

@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,30 +15,31 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   mod_openchat
- * @category  backup
- * @copyright 2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-/**
- * Define all the restore steps that will be used by the restore_openchat_activity_task
+ * Restore the plugin.
+ * @package    mod_openchat
+ * @copyright  2025 Niels Seidel <niels.seidel@fernuni-hagen.de>, CATALPA, FernUniversität Hagen
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
  * Structure step to restore one openchat activity
  */
 class restore_openchat_activity_structure_step extends restore_activity_structure_step {
-
+    /**
+     * Bla.
+     */
     protected function define_structure() {
 
-        $paths = array();
+        $paths = [];
         $paths[] = new restore_path_element('openchat', '/activity/openchat');
 
-        // Return the paths wrapped into standard activity structure
+        // Return the paths wrapped into standard activity structure.
         return $this->prepare_activity_structure($paths);
     }
 
+    /**
+     * Blo.
+     */
     protected function process_openchat($data) {
         global $DB;
 
@@ -50,16 +50,17 @@ class restore_openchat_activity_structure_step extends restore_activity_structur
         // Any changes to the list of dates that needs to be rolled should be same during course restore and course reset.
         // See MDL-9367.
 
-        // insert the openchat record
+        // Insert the openchat record.
         $newitemid = $DB->insert_record('openchat', $data);
-        // immediately after inserting "activity" record, call this
+        // Immediately after inserting "activity" record, call this.
         $this->apply_activity_instance($newitemid);
     }
 
+    /**
+     * Blo.
+     */
     protected function after_execute() {
-        // Add openchat related files, no need to match by itemname (just internally handled context)
+        // Add openchat related files, no need to match by itemname (just internally handled context).
         $this->add_related_files('mod_openchat', 'intro', null);
-        // add other fileds here
-        //$this->add_related_files('mod_openchat', 'content', null);
     }
 }

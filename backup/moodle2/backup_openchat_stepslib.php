@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,60 +15,49 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   mod_openchat
- * @category  backup
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-defined('MOODLE_INTERNAL') || die;
-
-/**
- * Define all the backup steps that will be used by the backup_openchat_activity_task
+ * Backup openchat.
+ * @package    mod_openchat
+ * @copyright  2025 Niels Seidel <niels.seidel@fernuni-hagen.de>, CATALPA, FernUniversität Hagen
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
  * Define the complete openchat structure for backup, with file and id annotations
  */
 class backup_openchat_activity_structure_step extends backup_activity_structure_step {
-
+    /**
+     * Bla.
+     */
     protected function define_structure() {
 
-        // To know if we are including userinfo
-        //$userinfo = $this->get_setting_value('userinfo');
-
-        // Define each element form the install.xml separated
+        // To know if we are including userinfo.
+        // Bla $userinfo = $this->get_setting_value('userinfo'); .
+        // Define each element form the install.xml separated.
         $openchat = new backup_nested_element(
-            'openchat', 
-            array('id'), 
-            array(
+            'openchat',
+            ['id'],
+            [
                 'course',
-                'name', 
-                'intro', 
-                'hostname', 
-                'apikey', 
+                'name',
+                'intro',
+                'hostname',
+                'apikey',
                 'model',
-                'chatmodus', 
-                'prompttemplate', 
-                'timecreated', 
-                'timemodified' 
-                // add other fields here
-            )
+                'chatmodus',
+                'prompttemplate',
+                'timecreated',
+                'timemodified',
+            ]
         );
+        // Define sources.
+        $openchat->set_source_table('openchat', ['id' => backup::VAR_ACTIVITYID]);
 
-        // Build the tree
-        // (love this)
+        // Define id annotations: (none).
 
-        // Define sources
-        $openchat->set_source_table('openchat', array('id' => backup::VAR_ACTIVITYID));
-
-        // Define id annotations
-        // (none)
-
-        // Define file annotations
+        // Define file annotations.
         $openchat->annotate_files('mod_openchat', 'intro', null);
-        //$openchat->annotate_files('mod_openchat', 'content', null);
 
-        // Return the root element (page), wrapped into standard activity structure
+        // Return the root element (page), wrapped into standard activity structure.
         return $this->prepare_activity_structure($openchat);
     }
 }

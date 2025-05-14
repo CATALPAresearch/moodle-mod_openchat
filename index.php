@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,6 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ *
+ * @package    mod_openchat
+ * @copyright  2025 Niels Seidel <niels.seidel@fernuni-hagen.de>, CATALPA, FernUniversität Hagen
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ */
+
+
+/**
  * List of all openchats in course
  *
  * @package mod_openchat
@@ -25,17 +33,12 @@
 
 require('../../config.php');
 
-$id = required_param('id', PARAM_INT); // course id
+$id = required_param('id', PARAM_INT);
 
-$course = $DB->get_record('course', array('id'=>$id), '*', MUST_EXIST);
+$course = $DB->get_record('course', ['id' => $id], '*', MUST_EXIST);
 
 require_course_login($course, true);
 $PAGE->set_pagelayout('incourse');
-
-// Trigger instances list viewed event.
-//$event = \mod_openchat\event\course_module_instance_list_viewed::create(array('context' => context_course::instance($course->id)));
-//$event->add_record_snapshot('course', $course);
-//$event->trigger();
 
 $stropenchat     = get_string('modulename', 'openchat');
 $stropenchats    = get_string('modulenameplural', 'mod_openchat');
@@ -43,7 +46,7 @@ $strname         = get_string('name');
 $strintro        = get_string('moduleintro');
 $strlastmodified = get_string('lastmodified');
 
-$PAGE->set_url('/mod/openchat/index.php', array('id' => $course->id));
+$PAGE->set_url('/mod/openchat/index.php', ['id' => $course->id]);
 $PAGE->set_title($course->shortname.': '.$stropenchats);
 $PAGE->set_heading($course->fullname);
 $PAGE->navbar->add($stropenchats);
@@ -61,11 +64,11 @@ $table->attributes['class'] = 'generaltable mod_index';
 
 if ($usesections) {
     $strsectionname = get_string('sectionname', 'format_'.$course->format);
-    $table->head  = array ($strsectionname, $strname, $strintro);
-    $table->align = array ('center', 'left', 'left');
+    $table->head  = [$strsectionname, $strname, $strintro];
+    $table->align = ['center', 'left', 'left'];
 } else {
-    $table->head  = array ($strlastmodified, $strname, $strintro);
-    $table->align = array ('left', 'left', 'left');
+    $table->head  = [$strlastmodified, $strname, $strintro];
+    $table->align = ['left', 'left', 'left'];
 }
 
 $modinfo = get_fast_modinfo($course);
@@ -87,15 +90,14 @@ foreach ($openchats as $openchat) {
         $printsection = '<span class="smallinfo">'.userdate($openchat->timemodified)."</span>";
     }
 
-    $class = $openchat->visible ? '' : 'class="dimmed"'; // hidden modules are dimmed
+    $class = $openchat->visible ? '' : 'class="dimmed"';
 
-    $table->data[] = array (
+    $table->data[] = [
         $printsection,
         "<a $class href=\"view.php?id=$cm->id\">".format_string($openchat->name)."</a>",
-        format_module_intro('openchat', $openchat, $cm->id));
+        format_module_intro('openchat', $openchat, $cm->id)];
 }
 
 echo html_writer::table($table);
 
 echo $OUTPUT->footer();
-

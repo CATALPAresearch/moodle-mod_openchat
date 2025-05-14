@@ -1,4 +1,27 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+
+/**
+ *
+ * @package    mod_openchat
+ * @copyright  2025 Niels Seidel <niels.seidel@fernuni-hagen.de>, CATALPA, FernUniversität Hagen
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ */
+
 require('../../config.php');
 require_once($CFG->dirroot . '/mod/openchat/lib.php');
 require_once($CFG->libdir . '/completionlib.php');
@@ -50,10 +73,10 @@ $PAGE->requires->js_call_amd('mod_openchat/app-lazy', 'initOpenChat', [
     'coursemoduleid' => $coursemodule->id,
     'contextid' => $context->id,
     'isAdmin' => $isadmin,
-    'page_instance_id' => $page->id, // use actual instance ID
+    'page_instance_id' => $page->id, // Use actual instance ID.
     'RAGenabled' => get_config('mod_openchat', 'enable_rag'),
     'RAGhostname' => get_config('mod_openchat', 'rag_webservice_host'),
-    'RAGapiKey' => get_config('mod_openchat', 'rag_webservice_apikey')
+    'RAGapiKey' => get_config('mod_openchat', 'rag_webservice_apikey'),
 ]);
 
 
@@ -63,13 +86,11 @@ echo $OUTPUT->header();
 echo html_writer::div('', 'OpenChatApp', ['id' => 'OpenChatApp']);
 echo $OUTPUT->footer($course);
 
-$payload = array(
+$payload = [
     'context' => \context_system::instance(),
     'courseid' => 22,
     'userid' => 22,
-    'other' => array(
+    'other' => [
         'value' => 44,
-    ),
-);
-//$event = \mod_openchat\event\view_openchat_event::create($payload);
-//$event->trigger();
+    ],
+];

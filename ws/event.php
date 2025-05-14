@@ -1,11 +1,27 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  *
  * @package    mod_openchat
- * @copyright  2021 Marc Burchart <marc.burchart@tu-dortmund.de> , Kooperative Systeme, FernUniversität Hagen
- * 
+ * @copyright  2025 Niels Seidel <niels.seidel@fernuni-hagen.de>, CATALPA, FernUniversität Hagen
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
  */
+
 
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir . '/filelib.php');
@@ -13,35 +29,41 @@ require_once($CFG->libdir . "/externallib.php");
 require_once($CFG->dirroot . "/lib/moodlelib.php");
 require_once($CFG->dirroot . '/group/lib.php');
 
-class mod_openchat_event extends external_api
-{
+/**
+ * Something.
+ */
+class mod_openchat_event extends external_api {
 
-    public static function triggerEvent_parameters()
-    {
+    /**
+     * Something.
+     */
+    public static function triggerevent_parameters() {
         return new external_function_parameters(
-            array(
+            [
                 'cmid' => new external_value(PARAM_INT, 'id of openchat'),
                 'action' => new external_value(PARAM_TEXT, 'Name of the performed action', VALUE_OPTIONAL),
                 'value' => new external_value(PARAM_TEXT, 'Values related to the action', VALUE_OPTIONAL),
-            )
+            ]
         );
     }
 
-    // Function to get replies between users in a forum
-    public static function triggerEvent($cmid, $action, $value)
-    {
+    // Function to get replies between users in a forum.
+    /**
+     * Something.
+     */
+    public static function triggerevent($cmid, $action, $value) {
         try {
             global $USER, $DB;
             $cm = get_coursemodule_from_id('openchat', $cmid, 0, false, MUST_EXIST);
-            $openchat = $DB->get_record('openchat', array('id' => $cm->instance), '*', MUST_EXIST);
-            $course_id = $openchat->course;
+            $openchat = $DB->get_record('openchat', ['id' => $cm->instance], '*', MUST_EXIST);
+            $courseid = $openchat->course;
 
-            $payload = array(
+            $payload = [
                 'context' => \context_system::instance(),
-                'courseid' => $course_id,
+                'courseid' => $courseid,
                 'userid' => $USER->id,
                 'other' => serialize($value),
-            );
+            ];
 
             switch ($action) {
                 case "copy_response":
@@ -78,24 +100,28 @@ class mod_openchat_event extends external_api
                     break;
             }
 
-            return array('success' => true, 'data' => '');
+            return ['success' => true, 'data' => ''];
         } catch (Exception $ex) {
-            return array('success' => false, 'data' => $ex->getMessage());
+            return ['success' => false, 'data' => $ex->getMessage()];
         }
     }
 
-    public static function triggerEvent_returns()
-    {
+    /**
+     * Something.
+     */
+    public static function triggerevent_returns() {
         return new external_single_structure(
-            array(
+            [
                 'success' => new external_value(PARAM_BOOL, 'true or false'),
                 'data' => new external_value(PARAM_RAW, 'data'),
-            )
+            ]
         );
     }
 
-    public static function triggerEvent_is_allowed_from_ajax()
-    {
+    /**
+     * Something.
+     */
+    public static function triggerevent_is_allowed_from_ajax() {
         return true;
     }
 }

@@ -1,12 +1,4 @@
 import ajax from 'core/ajax';
-
-/**
- *
- * @package    mod_openchat
- * @copyright  2022 Marc Burchart <marc.burchart@tu-dortmund.de> , Kooperative Systeme, FernUniversität Hagen
- * 
- */
-
 export default class Communication{
     static webservice(method, param = {}){          
         return new Promise(           

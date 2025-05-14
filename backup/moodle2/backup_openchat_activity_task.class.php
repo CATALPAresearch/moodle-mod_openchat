@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,9 +17,9 @@
 /**
  * Defines backup_openchat_activity_task class
  *
- * @package   mod_openchat
- * @category  backup
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    mod_openchat
+ * @copyright  2025 Niels Seidel <niels.seidel@fernuni-hagen.de>, CATALPA, FernUniversität Hagen
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die;
@@ -51,18 +50,18 @@ class backup_openchat_activity_task extends backup_activity_task {
      * @param string $content some HTML text that eventually contains URLs to the activity instance scripts
      * @return string the content with the URLs encoded
      */
-    static public function encode_content_links($content) {
+    public static function encode_content_links($content) {
         global $CFG;
 
-        $base = preg_quote($CFG->wwwroot,"/");
+        $base = preg_quote($CFG->wwwroot, "/");
 
-        // Link to the list of openchats
-        $search="/(".$base."\/mod\/openchat\/index.php\?id\=)([0-9]+)/";
-        $content= preg_replace($search, '$@LONGPAGEINDEX*$2@$', $content);
+        // Link to the list of openchats.
+        $search = "/(".$base."\/mod\/openchat\/index.php\?id\=)([0-9]+)/";
+        $content = preg_replace($search, '$@LONGPAGEINDEX*$2@$', $content);
 
-        // Link to openchat view by moduleid
-        $search="/(".$base."\/mod\/openchat\/view.php\?id\=)([0-9]+)/";
-        $content= preg_replace($search, '$@LONGPAGEVIEWBYID*$2@$', $content);
+        // Link to openchat view by moduleid.
+        $search = "/(".$base."\/mod\/openchat\/view.php\?id\=)([0-9]+)/";
+        $content = preg_replace($search, '$@LONGPAGEVIEWBYID*$2@$', $content);
 
         return $content;
     }

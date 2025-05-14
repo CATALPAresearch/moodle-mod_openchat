@@ -14,7 +14,8 @@ curl -X POST http://localhost:5000/llm/models/list
 
 ## *OpenChat* is a Moodle activity plugin for chatting with open-source large language models.
 
-*openchat* (mod_openchat) is a ready to use Moodle activity plugin that enables students to chat with an open-source large language model. Currently, the plugin is compatible with the API of OpenWebUI (former Ollama). Thus, all models available for OpenWebUI can be selected by the teacher for chat communication of students. 
+*openchat* (mod_openchat) is a ready to use Moodle activity plugin that enables students to chat with an open-source large language model. Currently, the plugin is compatible with the API of OpenWebUI (former Ollama). Thus, all models available for [OpenWebUI](https://github.com/open-webui/open-webui) can be selected by the teacher for chat communication of students. 
+In addition the plugin supports document chats using Retrieval Augmented Generation (RAG). RAG requires an external webservice providing the document store and handling the retrieval tasks. The RAG implementation is build for [RAG Webservice](https://github.com/catalparesearch/rag-webservice/).
  
 
 <!-- development-related badges -->
@@ -166,6 +167,9 @@ You can [download](https://github.com/catalparesearch/moodle-mod_openchat/releas
 ## Getting Started with Development
 
 The client-side code lives in the `vue/` folder. The root DOM element is defined in `view.php`. Webservices for Moodle database access are declared in `./db/services.php` and implemented in `./ws/`.
+
+See the documentation of the OpenWebUI [API endpoints](https://docs.openwebui.com/getting-started/api-endpoints/). The RAG webservices used for the document chat can be found [here](https://github.com/CATALPAresearch/rag-webservice).
+
 
 ### 🙌 How You Can Help
 

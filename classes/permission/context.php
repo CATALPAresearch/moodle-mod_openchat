@@ -1,104 +1,182 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  *
- * @author  2021 Marc Burchart <marc.burchart@tu-dortmund.de> , Kooperative Systeme, FernUniversität Hagen
- * 
+ * @package    mod_openchat
+ * @copyright  2025 Niels Seidel <niels.seidel@fernuni-hagen.de>, CATALPA, FernUniversität Hagen
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
  */
 
 namespace mod_openchat\permission;
 
-defined('MOODLE_INTERNAL') || die();
 
-
+/**
+ * Something.
+ */
 class context {
 
+    /**
+     * Something.
+     * @var bla.
+     */
     protected $_context;
+
+    /**
+     * Something.
+     * @var bla.
+     */
     protected $_userid;
+
+    /**
+     * Something.
+     * @var bla.
+     */
     protected $_roles;
 
-    function __construct($userid, $context){      
+    /**
+     * Something.
+     */
+    public function __construct($userid, $context) {
         require_login();
         $this->_context = $context;
         $this->_userid = $userid;
         $this->_roles = get_user_roles($this->_context, $this->_userid);
-    }   
+    }
 
-    public function isSiteAdmin(){
+    /**
+     * Something.
+     */
+    public function issiteadmin() {
         return is_siteadmin($this->_userid);
     }
 
-    public function isManager(){
+    /**
+     * Something.
+     */
+    public function ismanager() {
         return $this->findRole('manager');
     }
 
-    public function isCourseCreator(){
+    /**
+     * Something.
+     */
+    public function iscoursecreator() {
         return $this->findRole('coursecreator');
     }
 
-    public function isEditingTeacher(){
+    /**
+     * Something.
+     */
+    public function iseditingteacher() {
         return $this->findRole('editingteacher');
     }
 
-    public function isTeacher(){
+    /**
+     * Something.
+     */
+    public function isteacher() {
         return $this->findRole('teacher');
     }
 
-    public function isStudent(){
+    /**
+     * Something.
+     */
+    public function isstudent() {
         return $this->findRole('student');
     }
 
-    public function isGuest(){
+    /**
+     * Something.
+     */
+    public function isguest() {
         return is_guest($this->_context, $this->_userid);
     }
 
-    public function isUser(){
-        return $this->findRole('user'); 
+    /**
+     * Something.
+     */
+    public function isuser() {
+        return $this->findRole('user');
     }
 
-    public function isFrontPage(){
-        return $this->findRole('frontpage'); 
+    /**
+     * Something.
+     */
+    public function isfrontpage() {
+        return $this->findRole('frontpage');
     }
 
-    public function findRole($shortname){
-        foreach($this->_roles as $role){
-            if(isset($role->shortname) && strtolower($role->shortname) === strtolower($shortname)){
+    /**
+     * Something.
+     */
+    public function findrole($shortname) {
+        foreach ($this->_roles as $role) {
+            if (isset($role->shortname) && strtolower($role->shortname) === strtolower($shortname)) {
                 return true;
             }
         }
         return false;
     }
 
-    public function hasViewCapability(){
+    /**
+     * Something.
+     */
+    public function hasviewcapability() {
         return is_viewing($this->_context, $this->_userid);
     }
 
-    public function isEnrolled(){
+    /**
+     * Something.
+     */
+    public function isenrolled() {
         return is_enrolled($this->_context, $this->_userid);
     }
 
-    public function isAnyKindOfModerator(){      
-        #return false;
-        if(
+    /**
+     * Something.
+     */
+    public function isanykindofmoderator() {
+        if (
             $this->isSiteAdmin() ||
             $this->isManager() ||
-            $this->isCourseCreator() || 
-            $this->isEditingTeacher() ||          
-            $this->isTeacher()            
-        ){
+            $this->isCourseCreator() ||
+            $this->isEditingTeacher() ||
+            $this->isTeacher()
+        ) {
             return true;
         }
         return false;
     }
 
-    public function getContext(){
+    /**
+     * Something.
+     */
+    public function getcontext() {
         return $this->_context;
     }
 
-    public function getCourseContext(){
+    /**
+     * Something.
+     */
+    public function getcoursecontext() {
         $context = $this->_context;
         return $context->get_course_context();
     }
 }
 
-?>
+

@@ -3,7 +3,7 @@
         <label class="file-upload">
             <div class="w50 filename-container">
                 <span v-if="isProcessing">
-                    <font-awesome-icon class="fa-spin" icon="spinner" aria-hidden="true"/>
+                    <font-awesome-icon class="fa-spin" icon="spinner" aria-hidden="true" />
                     Indexierung läuft: </span>
                 <span v-if="selectedFile">{{ selectedFile.name }}</span>
             </div>
@@ -12,20 +12,13 @@
                 <span v-else-if="selectedFile">Datei {{ selectedFile.name }} ausgewählt</span>
             </div>
             <div style="display: table-cell;">
-                <label 
-                    for="pdf-upload" 
-                    v-if="!isProcessing" 
-                    :class="{'btn btn-primary btn-sm': selectedFile==null, 'btn btn-light btn-sm': selectedFile!=null}">
+                <label for="pdf-upload" v-if="!isProcessing"
+                    :class="{ 'btn btn-primary btn-sm': selectedFile == null, 'btn btn-light btn-sm': selectedFile != null }">
                     PDF auswählen
                 </label>
-                <input 
-                    id="pdf-upload"    
-                    v-if="!isProcessing" 
-                    class="btn btn-primary btn-sm" 
-                    title="Die hochgeladene Lernressource wird gerade verarbeitet." 
-                    type="file" 
-                    @change="handleFileUpload" 
-                    accept="application/pdf" />
+                <input id="pdf-upload" v-if="!isProcessing" class="btn btn-primary btn-sm"
+                    title="Die hochgeladene Lernressource wird gerade verarbeitet." type="file"
+                    @change="handleFileUpload" accept="application/pdf" />
                 <button v-if="selectedFile && !isProcessing" class="btn btn-primary btn-sm" @click="sendToWebService">
                     PDF hochladen
                 </button>
@@ -64,14 +57,16 @@ export default {
             }
             this.isProcessing = true;
             var activity_type = 'pdf';
-            var activity_id = Math.floor(Math.random()*30000); // FixMe
+            var activity_id = Math.floor(Math.random() * 30000); // FixMe
             const formData = new FormData();
             const systemContext = this.$store.getters.getSystemContext
-            formData.append("file", this.selectedFile);
+            
             formData.append("system", systemContext['systemName']);
             formData.append("course_id", systemContext['courseID']);
             formData.append("activity_type", activity_type);
+            formData.append("activity_name", this.selectedFile.name);
             formData.append("activity_id", activity_id);
+            formData.append("file", this.selectedFile);
 
             const url = this.$store.getters.getRAGWebserviceHost + "documents/create_index";
             //console.log('form upload data', formData)
@@ -88,23 +83,48 @@ export default {
                     activity_type: activity_type,
                 };
                 console.log("Web Service Response:", this.webServiceResponse);
-                // send recaived data to parent component
+                // send received data to parent component
                 this.$emit("document_uploaded", this.webServiceResponse);
+                
+                // send file to Moodle after all preprocessing was sucessful
+                // TODO: try to store the resulting vector data as part of the file meta data
+                this.uploadFileToMoodle(this.selectedFile);
                 
                 // reset file upload for the next document
                 this.selectedFile = null;
                 this.isProcessing = false;
-            
+
             }).catch(error => {
                 console.error("Error sending file to web service:", error);
                 console.log("Error uploading file.");
-                this.webServiceResponse = { 
+                this.webServiceResponse = {
                     error: true,
                     msg: 'Bei der Verarbeitung des hochgeladenen Dokuments ist ein Problem aufgetreten',
                     error_detail: error
                 }
             });
         },
+
+        async uploadFileToMoodle(file) {
+            const reader = new FileReader();
+            reader.onload = async function () {
+                const base64 = reader.result.split(',')[1]; // remove data:... prefix
+                const response = Communication.webservice("document_delete", {
+                    cmid: _this.$store.getters.getCMID,
+                    file: base64,
+                    filename: file.name
+                });
+                const result = await response.json();
+                if (result[0].data.success) {
+                    alert('Upload successful');
+                } else {
+                    console.error(result);
+                    alert('Upload failed');
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
     },
 };
 </script>
@@ -130,21 +150,23 @@ button:disabled {
 input[type="file"] {
     display: none;
 }
+
 .file-upload {
     display: inline-block;
     cursor: pointer;
 }
+
 .fa-spinner {
-  margin-right: 5px;
-  font-size: 1.2em;
+    margin-right: 5px;
+    font-size: 1.2em;
 }
 
 .filename-container {
-  display: table-cell;
-  max-width: 250px;  /* Adjust width as needed */
-  white-space: normal;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+    display: table-cell;
+    max-width: 250px;
+    /* Adjust width as needed */
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
-
 </style>
