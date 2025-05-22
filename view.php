@@ -68,15 +68,30 @@ global $SITE;
 
 // Load JavaScript (AMD, Vue) app.
 $PAGE->requires->js_call_amd('mod_openchat/app-lazy', 'initOpenChat', [
-    'systemName' => $SITE->shortname,
-    'courseID' => $course->id,
-    'coursemoduleid' => $coursemodule->id,
-    'contextid' => $context->id,
-    'isAdmin' => $isadmin,
-    'page_instance_id' => $page->id, // Use actual instance ID.
-    'RAGenabled' => get_config('mod_openchat', 'enable_rag'),
-    'RAGhostname' => get_config('mod_openchat', 'rag_webservice_host'),
-    'RAGapiKey' => get_config('mod_openchat', 'rag_webservice_apikey'),
+    'context' => [
+        'system_name' => $SITE->shortname,
+        'course_id' => $course->id,
+        'course_module_id' => $coursemodule->id,
+        'context_id' => $context->id,
+        'is_admin' => $isadmin,
+        'page_instance_id' => $page->id, // Use actual instance ID.    
+    ],
+    /*'llm' => [
+        'llmenabled' => get_config('mod_openchat', 'enable_llm'),
+        'llmhostname' => get_config('mod_openchat', 'llm_host'),
+        'llmapiKey' => get_config('mod_openchat', 'llm_apikey'),
+    ],
+    'rag' => [
+        'RAGenabled' => get_config('mod_openchat', 'enable_rag'),
+        'RAGhostname' => get_config('mod_openchat', 'rag_webservice_host'),
+        'RAGapiKey' => get_config('mod_openchat', 'rag_webservice_apikey'),
+    ],
+    'agent' => [
+        'agentenabled' => get_config('mod_openchat', 'enable_agent'),
+        'agenthostname' => get_config('mod_openchat', 'agent_webservice_host'),
+        'agentapiKey' => get_config('mod_openchat', 'agent_webservice_apikey'),
+    ],
+    */
 ]);
 
 
@@ -85,12 +100,3 @@ $PAGE->activityrecord->intro = '';
 echo $OUTPUT->header();
 echo html_writer::div('', 'OpenChatApp', ['id' => 'OpenChatApp']);
 echo $OUTPUT->footer($course);
-
-$payload = [
-    'context' => \context_system::instance(),
-    'courseid' => 22,
-    'userid' => 22,
-    'other' => [
-        'value' => 44,
-    ],
-];

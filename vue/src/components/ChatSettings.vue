@@ -32,6 +32,18 @@
                 </label>
             </fieldset>
         </div>
+         <!-- Instructions -->
+        <div class="form-group">
+            <h4>Instructionen</h4>
+            <label for="intro-text">
+                Instruktionen an die Lernenden zur Nutzung des Chats:<br/>
+            </label>
+            <textarea ref="intro-text" v-model="intro" @change="updateIntro"></textarea>
+            <label hidden>
+                Prompt-Template:
+                <textarea v-model="prompt" @change="updatePrompt"></textarea>
+            </label>
+        </div>
         <hr>
         <!-- Settings for the document chat (RAG) -->
         <div v-if="chatmodus == 'document-chat'">
@@ -51,12 +63,15 @@
                         <td>
                             <input type="checkbox" v-model="doc.selected" />
                         </td>
-                        <td>{{ doc.file.name }}</td>
+                        <td v-if="doc.url==''">{{ doc.filename }}</td>
+                        <td v-if="doc.url!=''">
+                            <a :href="doc.url">{{ doc.filename }}</a>
+                        </td>
                         <td>{{ doc.activity_type }}</td>
                         <td>
                             <button
                                 type="button"
-                                class="delete-icon"
+                                class="btn btn-link delete-icon"
                                 @click="removeDocument(doc.id)"
                                 :aria-label="'Dokument'+ doc.file.name + 'löschen'"
                                 >
@@ -108,12 +123,36 @@ export default {
         return {};
     },
     created: function () {
+        this.intro = this.$store.getters.getIntro;
+        this.prompt = this.$store.getters.getPromptTemplate;
         this.model = this.$store.getters.getModel;
         this.chatmodus = this.$store.getters.getChatModus;
         console.log('this.chatmodus', this.chatmodus)
+        this.loadDocuments();
     },
 
     methods: {
+        async loadDocuments(){
+            const response = await Communication.webservice("document_list", {
+                    cmid: this.$store.getters.getCMID
+                });
+                console.log('start document_list')
+                const docs = await response;
+                console.log('loaded_docs: ', docs);
+                for(var i=0; i < docs.length; i++){
+                    console.log(docs[i])
+                    this.documents.push({
+                        file: '',
+                        filename: docs[i].filename,
+                        url: docs[i].url,
+                        activity_type: '?',//response.activity_type,
+                        activity_id: '?', //response.activity_id,
+                        document_index: '?', //response.document_index, // needed? FixMe
+                        selected: "selected",
+                    });
+                }    
+        },
+        
         addDocument: function (response) {
             console.log("handle adddocument", response);
             if (response.error) {
@@ -123,6 +162,8 @@ export default {
             this.document_index = response.document_index;
             this.documents.push({
                 file: response.file,
+                filename: response.file.name,
+                url: '',
                 activity_type: response.activity_type,
                 activity_id: response.activity_id,
                 document_index: response.document_index, // needed? FixMe
@@ -146,6 +187,14 @@ export default {
         },
         updateModel: function () {
             this.$store.commit("setModel", this.model);
+            this.$store.dispatch("updatePluginSettings");
+        },
+        updateIntro: function () {
+            this.$store.commit("setIntro", this.intro);
+            this.$store.dispatch("updatePluginSettings");
+        },
+        updatePrompt: function () {
+            this.$store.commit("setPromptTemplate", this.prompt);
             this.$store.dispatch("updatePluginSettings");
         },
         fetchUploadedFiles: async function(cmid) {
@@ -198,6 +247,11 @@ export default {
 
 .settings h4 {
     font-size: 1.1em;
+}
+
+.settings textarea {
+    display: block;
+    width: 100%;
 }
 
 .document-table {

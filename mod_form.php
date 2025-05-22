@@ -38,7 +38,7 @@ class mod_openchat_mod_form extends moodleform_mod {
         global $CFG;
         $mform = $this->_form;
 
-        // General settings.
+        // General settings like title, task description, and prompt template
         $mform->addElement('text', 'name', get_string('title', 'mod_openchat'), ['size' => '64']);
         $mform->setType('name', PARAM_TEXT);
         $mform->addRule('name', null, 'required', null, 'client');

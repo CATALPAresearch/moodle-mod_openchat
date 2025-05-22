@@ -10,8 +10,10 @@
                 <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="introformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0"/>
+
                 <FIELD NAME="hostname" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="apikey" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                
                 <FIELD NAME="model" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="chatmodus" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="prompttemplate" TYPE="text" NOTNULL="false" SEQUENCE="false"/>

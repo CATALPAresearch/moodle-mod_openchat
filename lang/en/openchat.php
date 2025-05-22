@@ -32,20 +32,34 @@ $string['pluginadministration'] = 'OpenChat Administration';
 $string['pluginname'] = 'OpenChat';
 
 // Plugin Admin Settings.
+$string['llmsettings'] = 'LLM settings';
+$string['llmsettings_desc'] = '';
 $string['enable_llm'] = 'Enable LLM chat';
 $string['enable_llm_desc'] = 'If enabled, a chat with a LLM is provided';
 $string['llm_host'] = 'Hostname of LLM server';
 $string['llm_host_desc'] = 'Hostname of the webservice providing access to the Large Language Model';
 $string['llm_apikey'] = 'LLM API key';
 $string['llm_apikey_desc'] = 'API key of the LLM webservice';
+
+
+$string['ragsettings'] = 'Document chat settings';
+$string['ragsettings_desc'] = 'Document chat used Retrieval Agmented Generation as a method to request information from a set of documents instead of the pre-trained LLM. In this scenario the LLM only provides a coherent formulation of the respons text that was retreived from the documents';
 $string['enable_rag'] = 'Enable document chat using RAG';
 $string['enable_rag_desc'] = 'If enabled LLM are used with Retrieval Augmented Generation (RAG) to enable chat about the contents of the provided documents';
 $string['rag_webservice_host'] = 'Hostname of RAG webservice';
 $string['rag_webservice_host_desc'] = 'Hostname of the webservice providing RAG';
 $string['rag_webservice_apikey'] = 'RAG API key';
 $string['rag_webservice_apikey_desc'] = 'API key of the RAG webservice';
+
+$string['agentsettings'] = 'Learning agent settings';
+$string['agentsettings_desc'] = '';
 $string['enable_agent_chat'] = 'Enable SRL chat agent';
 $string['enable_agent_chat_desc'] = 'If enabled, a chat with an specific agents is provided';
+$string['agent_webservice_host'] = 'Hostname of agent webservice';
+$string['agent_webservice_host_desc'] = 'Hostname of the webservice providing a learning agent';
+$string['agent_webservice_apikey'] = 'Agent API key';
+$string['agent_webservice_apikey_desc'] = 'API key of thea agent webservice';
+
 
 // Errors.
 $string['invcmid'] = 'Invalid cmid';

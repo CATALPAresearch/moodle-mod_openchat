@@ -30,11 +30,16 @@ if ($hassiteconfig) {
 
     $ADMIN->add('modsettings', $settings);
 
+    $settings->add(new admin_setting_heading(
+        'mod_openchat/llm_section',
+        get_string('llmsettings', 'mod_openchat'),
+        get_string('llmsettings_desc', 'mod_openchat')
+    ));
     $settings->add(new admin_setting_configcheckbox(
         'mod_openchat/enable_llm',
         get_string('enable_llm', 'mod_openchat'),
         get_string('enable_llm_desc', 'mod_openchat'),
-        0
+        1
     ));
     $settings->add(new admin_setting_configtext(
         'mod_openchat/llm_host',
@@ -51,6 +56,11 @@ if ($hassiteconfig) {
         PARAM_TEXT
     ));
 
+    $settings->add(new admin_setting_heading(
+        'mod_openchat/rag_section',
+        get_string('ragsettings', 'mod_openchat'),
+        get_string('ragsettings_desc', 'mod_openchat')
+    ));
     $settings->add(new admin_setting_configcheckbox(
         'mod_openchat/enable_rag',
         get_string('enable_rag', 'mod_openchat'),
@@ -72,11 +82,31 @@ if ($hassiteconfig) {
         PARAM_TEXT
     ));
 
+
+    $settings->add(new admin_setting_heading(
+        'mod_openchat/agent_section',
+        get_string('agentsettings', 'mod_openchat'),
+        get_string('agentsettings_desc', 'mod_openchat')
+    ));
     $settings->add(new admin_setting_configcheckbox(
         'mod_openchat/enable_agengt_chat',
         get_string('enable_agent_chat', 'mod_openchat'),
         get_string('enable_agent_chat_desc', 'mod_openchat'),
         0
+    ));
+    $settings->add(new admin_setting_configtext(
+        'mod_openchat/agent_webservice_host',
+        get_string('agent_webservice_host', 'mod_openchat'),
+        get_string('agent_webservice_host_desc', 'mod_openchat'),
+        'http://localhost:5000',
+        PARAM_TEXT
+    ));
+    $settings->add(new admin_setting_configtext(
+        'mod_openchat/agent_webservice_apikey',
+        get_string('agent_webservice_apikey', 'mod_openchat'),
+        get_string('agent_webservice_apikey_desc', 'mod_openchat'),
+        '',
+        PARAM_TEXT
     ));
 
 }

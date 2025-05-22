@@ -58,8 +58,8 @@ export default Vue.extend({
     mounted: function () { },
     methods: {
         ...mapGetters({
-            rag_webservice_host: 'getRAGWebserviceHost',
-            pluginSettings: 'getPluginSettings',
+            //rag_webservice_host: 'getRAGWebserviceHost',
+            //pluginSettings: 'getPluginSettings',
         }),
         getNextMessageId: function(){
             this.messageId++;
@@ -85,9 +85,10 @@ export default Vue.extend({
             let message_pos = this.messages.push({ author: "bot", message: "", id: this.getNextMessageId() });
 
             // default
-            let url = this.$store.getters.getRAGWebserviceHost + "llm/query_documents";
+            const base = new URL(this.$store.getters.getRAGWebserviceHost);
+            const url = new URL("llm/query_documents", base);
             let payload = {
-                //"model": this.model(),//"llama3.1",
+                "model": this.model(),
                 "filter": this.updateDocumentFilter(),
                 "prompt": message,
             };
@@ -95,7 +96,7 @@ export default Vue.extend({
 
             try {
                 // send request
-                const response = await fetch(url, {
+                const response = await fetch(url.href, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
