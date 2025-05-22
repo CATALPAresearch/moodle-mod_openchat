@@ -101,12 +101,16 @@ export default Vue.extend({
     mounted: function () { },
     methods: {
         listModels: async function () {
-            const response = await fetch('http://localhost:11434/api/tags'); // or your base_url
+            const base = new URL(this.$store.getters.getPluginSettings.hostname);
+            const url = new URL("./api/tags", base);
+            const response = await fetch(url);
             const data = await response.json();
             return data.models;
         },
         getModelDetails: async function (modelName) {
-            const response = await fetch('http://localhost:11434/api/show', {
+            const base = new URL(this.$store.getters.getPluginSettings.hostname);
+            const url = new URL("./api/show", base);
+            const response = await fetch(url.href, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
