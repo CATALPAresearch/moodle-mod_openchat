@@ -55,22 +55,26 @@ export default Vue.extend({
     },
 
     requestServerChat: async function (message) {
+      console.log(1)
       let _this = this;
       if (this.$store.getters.getChatModus !== 'llm-chat') {
+        console.error('@LLMChat: llm-chat not selected as modus: '+ this.$store.getters.getChatModus);
         return;
       }
       if (message == null || message.length == 0) {
         console.error('@LLMChat: Received empty message for LLM request');
       }
-      
+      console.log(22)
       //@ts-ignore
       let new_message = { author: "user", message: message, id: this.getNextMessageId() };
       this.messages.push(new_message);
+      console.log(3)
       Communication.webservice("triggerEvent", {
         cmid: _this.$store.getters.getCMID,
         action: "llm_request",
         value: JSON.stringify(new_message),
       });
+      console.log(4)
       //@ts-ignore
       let message_pos = this.messages.push({ author: "bot", message: "", id: this.getNextMessageId() });
       //let message_pos = this.messages.length;
@@ -83,8 +87,9 @@ export default Vue.extend({
       //postData.append('pageinstanceid', this.pageInstanceId);
 
 
-      const url = M.cfg.wwwroot + "/mod/openchat/llm_stream.php";
-
+      const base = new URL(M.cfg.wwwroot+"/");
+      const url = new URL("./mod/openchat/llm_stream.php", base);
+      
       const response = await fetch(url, {
         method: 'POST',
         body: postData
@@ -97,19 +102,25 @@ export default Vue.extend({
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder("utf-8");
+
       let completeText = "";
-
+      console.log('before loop', response)
       while (true) {
+        console.log('inloop 1')
         const { done, value } = await reader.read();
+        console.log('inloop 2', done, value)
         if (done) break;
-
+        
+        
         const chunk = decoder.decode(value, { stream: true });
-
+        console.log('inloop 3', chunk)
         // Ollama returns JSON per line
         const lines = chunk.split('\n').filter(line => line.trim() !== '');
         for (const line of lines) {
           try {
+            console.log('inloop 4', line)
             const parsed = JSON.parse(line);
+            console.log('inloop 5', parsed)
             if (parsed.done) break;
 
             const content = parsed.response;

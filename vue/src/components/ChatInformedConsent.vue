@@ -1,7 +1,6 @@
 <template>
     <div class="col-12 col-md-10 col-lg-8">
-        {{ $store.getters.getInformedConsentAgreement }}
-        <!-- 
+       <!-- 
             v-show="$store.getters.getInformedConsentAgreement != 'yes' && $store.getters.getInformedConsentAgreement != 'no'"
         -->
         <div

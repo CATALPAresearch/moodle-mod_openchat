@@ -9,15 +9,22 @@ Vue.use(Vuex);
 
 export const store = new Vuex.Store({
   state: {
+    // system context
+    systemName: null,
+    courseID: null,
+    courseModuleID: null,
+    pageInstanceId: null,
     isAdmin: false,
     showSettings: false,
+    strings: {},
+    llmModelList: [],
 
     // user context
     user: {
       userId: null,
     },
-
-    strings: {},
+    informedConsentAgreement: false,
+    
 
     // plugin context
     pluginSettings: {
@@ -26,19 +33,14 @@ export const store = new Vuex.Store({
       model: null,
       prompttemplate: null,
       chatmodus: null,
+      //
+      llmhostname: null,
+      llmenabled: null,
+      raghostname: null,
+      ragenabled: null,
+      agenthostname: null,
+      agentenabled: null,
     },
-    informedConsentAgreement: false,
-
-    // system context
-    systemName: null,
-    courseID: null,
-    courseModuleID: null,
-    pageInstanceId: null,
-    ragWebserviceHost: "http://localhost:5000/", // FixMe: remove
-    ragWebserviceAPIKey: '',
-
-    llmModelList: []
-
   },
   mutations: {
     setDocuments: function (state, docs) {
@@ -52,36 +54,41 @@ export const store = new Vuex.Store({
       state.showSettings = !state.showSettings;
     },
     setCourseModuleID: function (state, id) {
-      state.courseModuleID = id;
+      state.courseModuleID = parseInt(id);
     },
     setPluginSettings: function (state, settings) {
       //Object.assign(state.pluginSettings, settings); 
+
+      // Set local settings of the opchchat instance
+      //state.courseModuleID = settings.courseModuleID;
       state.pluginSettings.intro = settings.intro;
-      state.pluginSettings.hostname = settings.hostname;
       state.pluginSettings.model = settings.model;
       state.pluginSettings.prompttemplate = settings.prompttemplate;
-      state.pluginSettings.courseModuleID = settings.courseModuleID;
       state.pluginSettings.chatmodus = settings.chatmodus;
+
+      // Set global openchat settings
+      state.pluginSettings.hostname = settings.llm.llmhostname;
+      state.pluginSettings.llmhostname = settings.llm.llmhostname;
+      state.pluginSettings.llmenabled = settings.llm.llmenabled;
+      state.pluginSettings.raghostname = settings.rag.raghostname;
+      state.pluginSettings.ragenabled = settings.llm.ragenabled;
+      state.pluginSettings.agenthostname = settings.rag.agenthostname;
+      state.pluginSettings.agentenabled = settings.llm.agentenabled;
+      
       this.dispatch("loadModelNames");
       //console.log('storr', state.getters.pluginSettings.model)
     },
-    setHostname(state, name) {
-      state.hostname = name;
+    setIntro(state, intro) {
+      state.pluginSettings.intro = intro;
     },
-    setRAGWebserviceHost(state, name) {
-      state.ragWebserviceHost = name;
-    },
-    setRAGWebserviceHost(state, key) {
-      state.ragWebserviceAPIKey = key;
+    setPromptTemplate(state, name) {
+      state.pluginSettings.prompttemplate = name;
     },
     setLLMModelList(state, list) {
       state.llmModelList = list
     },
     setModel(state, name) {
       state.pluginSettings.model = name;
-    },
-    setPrompttemplate(state, name) {
-      state.prompttemplate = name;
     },
     setPageInstanceId(state, name) {
       state.pageInstanceId = name;
@@ -123,10 +130,10 @@ export const store = new Vuex.Store({
       return state.pluginSettings;
     },
     getHostname: function (state) {
-      return state.hostname;
+      return state.pluginSettings.llmhostname;
     },
     getRAGWebserviceHost: function (state) {
-      return state.ragWebserviceHost
+      return state.pluginSettings.raghostname
     },
     getLLMModelList(state) {
       return state.llmModelList;
@@ -134,11 +141,14 @@ export const store = new Vuex.Store({
     getModel: function (state) {
       return state.pluginSettings.model;
     },
-    getPrompttemplate: function (state) {
-      return state.prompttemplate;
+    getPromptTemplate: function (state) {
+      return state.pluginSettings.prompttemplate
+    },
+    getIntro(state) {
+      return state.pluginSettings.intro;
     },
     getCourseModuleId: function (state) {
-      return state.courseModuleId;
+      return parseInt(state.courseModuleId);
     },
     getPageInstanceId: function (state) {
       return state.pageInstanceId;
@@ -151,24 +161,33 @@ export const store = new Vuex.Store({
     loadPluginSettings: async function (context) {
       try {
         const cmid = context.getters.getCMID;
+        if (!cmid){
+          throw new Error('cmid undefined at store > actions > loadPluginSettings.');
+        }
         const req = await communication.webservice("load_settings", {
           cmid: cmid,
         });
         if (req.success) {
-          console.log("@store: loadPluginSettings: ", JSON.parse(req.data));
-          context.commit('setPluginSettings', JSON.parse(req.data));
+          const settings = JSON.parse(req.data);
+          context.commit('setPluginSettings', settings);
+          console.log("@store: loadPluginSettings: ", settings);
+          
         } else {
           console.log('@store: loadPluginSettings without success: ', req);
         }
       } catch (error) {
-        console.error(error);
-        throw new Error("@store: Failed to load plugin settings. ");
+        console.error('msg', error, "@store: Failed to load plugin settings. ");
+        throw error;
       }
     },
     updatePluginSettings: async function (context) {
       try {
+        const cmid = context.getters.getCMID
+        if (!cmid){
+          throw new Error('cmid undefined at store > actions > updatePluginSettings: ' + cmid);
+        }
         const response = await communication.webservice("update_settings", {
-          cmid: context.getters.getCMID,
+          cmid: cmid,
           settings: JSON.stringify(context.getters.getPluginSettings)
         });
 
@@ -249,9 +268,10 @@ export const store = new Vuex.Store({
       }
     },
     loadModelNames: async function (context) {
-      const url = context.getters.getPluginSettings.hostname + 'api/tags';
+      const base = new URL(context.getters.getPluginSettings.hostname);
+      const url = new URL('./api/tags', base);
       console.log('setLLMModelList', url)
-      const response = await fetch(url); // or your base_url
+      const response = await fetch(url.href); // or your base_url
       const data = await response.json();
       console.log('Availab. models', data.models)
       let models = data.models.map(m => m.name);
@@ -264,8 +284,9 @@ export const store = new Vuex.Store({
         system: sc.systemName,
         course_id: sc.courseID
       };
-      const url = this.getters.getRAGWebserviceHost + "documents/documents_by_course";
-      let response = await fetch(url, {
+      const base = new URL(this.getters.getRAGWebserviceHost);
+      const url = new URL('./documents/documents_by_course', base);
+      let response = await fetch(url.href, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
