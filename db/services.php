@@ -73,13 +73,14 @@ $functions = [
         'ajax'        => 'write',
         'loginrequired' => true,
     ],
-    'mod_openchat_document_upload' => [
+    'mod_openchat_document_upload' => [ 
         'classname'   => 'mod_openchat_documents',
-        'methodname'  => 'upload_document',
+        'methodname'  => 'document_upload',
         'classpath'   => 'mod/openchat/ws/documents.php',
         'description' => 'Upload a document to be used for RAG',
         'type'        => 'write',
         'ajax'        => true,
+        'uploadfiles'  => 1,
         'capabilities' => 'mod/openchat:upload',
     ],
     'mod_openchat_document_list' => [

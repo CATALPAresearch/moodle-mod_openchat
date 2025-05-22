@@ -32,6 +32,7 @@
 
 <script>
 import axios from "axios";
+import Communication from "../classes/communication";
 
 export default {
     data() {
@@ -68,8 +69,9 @@ export default {
             formData.append("activity_id", activity_id);
             formData.append("file", this.selectedFile);
 
-            const url = this.$store.getters.getRAGWebserviceHost + "documents/create_index";
-            //console.log('form upload data', formData)
+            const base = new URL(this.$store.getters.getRAGWebserviceHost) 
+            const url = new URL("documents/create_index", base);
+            console.log('form upload data', formData, url)
             await axios.post(
                 url,
                 formData,
@@ -88,7 +90,7 @@ export default {
                 
                 // send file to Moodle after all preprocessing was sucessful
                 // TODO: try to store the resulting vector data as part of the file meta data
-                this.uploadFileToMoodle(this.selectedFile);
+                this.uploadFileToMoodle(this.selectedFile, formData);
                 
                 // reset file upload for the next document
                 this.selectedFile = null;
@@ -105,21 +107,26 @@ export default {
             });
         },
 
-        async uploadFileToMoodle(file) {
+        async uploadFileToMoodle(file, formData) {
+            let _this = this;
             const reader = new FileReader();
             reader.onload = async function () {
+                console.log('start upload .. in the reader')
                 const base64 = reader.result.split(',')[1]; // remove data:... prefix
-                const response = Communication.webservice("document_delete", {
+                const response = await Communication.webservice("document_upload", {
                     cmid: _this.$store.getters.getCMID,
                     file: base64,
-                    filename: file.name
+                    filename: file.name,
+                    mimetype: file.type,
                 });
-                const result = await response.json();
-                if (result[0].data.success) {
-                    alert('Upload successful');
+                console.log('start upload: sent to webservice')
+                const result = await response;
+                console.log('res', result);
+                if (result.success) {
+                    console.log('Upload successful');
                 } else {
                     console.error(result);
-                    alert('Upload failed');
+                    console.log('Upload failed');
                 }
             };
             reader.readAsDataURL(file);

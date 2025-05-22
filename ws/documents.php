@@ -35,80 +35,60 @@ class mod_openchat_documents extends external_api {
     /**
      * Upload document.
      */
-    public static function upload_document_parameters() {
+    public static function document_upload_parameters() {
         return new external_function_parameters([
             'cmid' => new external_value(PARAM_INT, 'Course module ID'),
             'file' => new external_value(PARAM_RAW, 'Base64-encoded file content'),
-            'filename' => new external_value(PARAM_FILE, 'Name of the uploaded file'),
+            'filename' => new external_value(PARAM_FILE, 'Filename'),
+            'mimetype' => new external_value(PARAM_RAW, 'MIME type'),
         ]);
     }
 
-    /**
-     * Something.
-     */
-    public static function upload_document($cmid, $file, $filename) {
+    public static function document_upload($cmid, $base64file, $filename, $mimetype) {
         global $USER;
 
-        // Validate parameters.
-        $params = self::validate_parameters(self::upload_file_parameters(), [
-            'cmid' => $cmid,
-            'file' => $file,
-            'filename' => $filename,
-        ]);
+        $cm = get_coursemodule_from_id('openchat', $cmid, 0, false, MUST_EXIST);
+        $context = context_module::instance($cm->id);
+        require_capability('mod/openchat:upload', $context);
 
-        // Get context and check permissions.
-        $cm = get_coursemodule_from_id('openchat', $params['cmid'], 0, false, MUST_EXIST);
-        $context = \context_module::instance($cm->id);
-        self::validate_context($context);
-
-        // Decode the file.
-        $decoded = base64_decode($params['file']);
+        $decoded = base64_decode($base64file);
         if ($decoded === false) {
-            throw new invalid_parameter_exception("File decoding failed.");
+            throw new invalid_parameter_exception('Failed to decode file content.');
         }
 
         $fs = get_file_storage();
 
+        // Save to file storage
         $fileinfo = [
             'contextid' => $context->id,
             'component' => 'mod_openchat',
             'filearea'  => 'attachment',
             'itemid'    => $cm->instance,
             'filepath'  => '/',
-            'filename'  => clean_param($params['filename'], PARAM_FILE),
+            'filename'  => $filename
         ];
 
-        // Remove old file if present.
-        if ($existing = $fs->get_file(
-            $fileinfo['contextid'],
-            $fileinfo['component'],
-            $fileinfo['filearea'],
-            $fileinfo['itemid'],
-            $fileinfo['filepath'],
-            $fileinfo['filename']
-        )) {
-            $existing->delete();
-        }
+        // Write file to temporary location
+        $temp = tempnam(sys_get_temp_dir(), 'upload_');
+        file_put_contents($temp, $decoded);
 
-        // Create new file.
-        $fs->create_file_from_string($fileinfo, $decoded);
+        $fs->create_file_from_pathname($fileinfo, $temp);
+        unlink($temp);
 
         return ['success' => true];
     }
 
-    /**
-     * Something.
-     */
-    public static function upload_document_returns() {
+    public static function document_upload_returns() {
         return new external_single_structure([
-            'success' => new external_value(PARAM_BOOL, 'Was upload successful'),
+            'success' => new external_value(PARAM_BOOL, 'Upload success status')
         ]);
     }
+
 
     /**
      * Something.
      */
-    public static function upload_document_is_allowed_from_ajax() {
+    public static function document_upload_is_allowed_from_ajax() {
         return true;
     }
 
