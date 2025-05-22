@@ -51,6 +51,7 @@ class mod_openchat_settings extends external_api {
     public static function loadsettings($cmid) {
         global $USER, $DB;
         try {
+            // Get user settings of the local instance of the plugin.
             $cm = get_coursemodule_from_id('openchat', $cmid, 0, false, MUST_EXIST);
             $openchat = $DB->get_record('openchat', ['id' => $cm->instance], '*', MUST_EXIST);
             $course = $openchat->course;
@@ -58,7 +59,31 @@ class mod_openchat_settings extends external_api {
             if ($permission->isEnrolled() === false && $permission->isAnyKindOfModerator() === false) {
                 return ['success' => false, 'data' => get_string('nopermission', 'mod_openchat')];
             }
-            return ['success' => true, 'data' => json_encode($openchat)];
+            // Get selected global settings of the plugin. API keys will not be transfered to the client for security reasons
+            $admin_settings = [
+                'llm' => [
+                    'llmenabled' => get_config('mod_openchat', 'enable_llm'),
+                    'llmhostname' => get_config('mod_openchat', 'llm_host'),
+                    //'llmapiKey' => get_config('mod_openchat', 'llm_apikey'),
+                ],
+                'rag' => [
+                    'ragenabled' => get_config('mod_openchat', 'enable_rag'),
+                    'raghostname' => get_config('mod_openchat', 'rag_webservice_host'),
+                    //'RAGapiKey' => get_config('mod_openchat', 'rag_webservice_apikey'),
+                ],
+                'agent' => [
+                    'agentenabled' => get_config('mod_openchat', 'enable_agent'),
+                    'agenthostname' => get_config('mod_openchat', 'agent_webservice_host'),
+                    //'agentapiKey' => get_config('mod_openchat', 'agent_webservice_apikey'),
+                ],
+            ];
+            // Combine and return all settings.
+            $openchat_data = (array) $openchat;
+            $all_settings = array_merge($openchat_data, $admin_settings);
+            return [
+                'success' => true, 
+                'data' => json_encode($all_settings)
+            ];
         } catch (Exception $ex) {
             return ['success' => false, 'data' => get_string('unknown_error', 'mod_openchat')];
         }
@@ -100,12 +125,20 @@ class mod_openchat_settings extends external_api {
      * Something.
      */
     public static function updatesettings($cmid, $settings) {
-        global $USER, $DB;
+        global $DB;
         try {
+            $settings = json_decode($settings, true);
             $cm = get_coursemodule_from_id('openchat', $cmid, 0, false, MUST_EXIST);
-            $params = json_decode($settings, true);
+            $params = []; 
             $params['id'] = $cm->instance;
-            $openchat = $DB->update_record('openchat', $params);
+            // We cannot just send all settings back to database because some settings are derived from the plugin settings and not from the plugin instance settings.
+            //$params['name'] = $settings['name'];
+            $params['intro'] = $settings['intro'];
+            $params['model'] = $settings['model'];
+            $params['chatmodus'] = $settings['chatmodus'];
+            $params['prompttemplate'] = $settings['prompttemplate'];
+
+            $DB->update_record('openchat', $params);
 
             return ['success' => true];
         } catch (Exception $ex) {
