@@ -1,23 +1,17 @@
 <template>
   <div id="container" class="content" role="main">
     <div class="chat-header mb-3 w100">
-        <h3 class="d-flex justify-content-betweenx xalign-items-center mb-3">
-          <span id="chat-title">LLM-Chat</span>
-          <button
-            @click="$store.commit('toggleShowSettings', 1)"
-            class="btn btn-link settings-icon-button"
-            aria-controls="settings-panel"
-            :aria-expanded="$store.getters.showSettings.toString()"
-            aria-label="Einstellungen öffnen oder schließen"
-            title="Einstellungen"
-            style="margin-top:0px;"
-          >
-            <font-awesome-icon class="settings-icon" icon="cog" aria-hidden="true"/>
-          </button>
-        </h3>
+      <h3 class="d-flex justify-content-betweenx xalign-items-center mb-3">
+        <span id="chat-title">LLM-Chat</span>
+        <button @click="$store.commit('toggleShowSettings', 1)" class="btn btn-link settings-icon-button"
+          aria-controls="settings-panel" :aria-expanded="$store.getters.showSettings.toString()"
+          aria-label="Einstellungen öffnen oder schließen" title="Einstellungen" style="margin-top:0px;">
+          <font-awesome-icon class="settings-icon" icon="cog" aria-hidden="true" />
+        </button>
+      </h3>
       <div id="intro">
-        {{  $store.getters.getPluginSettings.intro }}
-      </div>  
+        {{ $store.getters.getPluginSettings.intro }}
+      </div>
       <RAGChatSettings v-if="$store.getters.showSettings" :documents="[]" />
     </div>
 
@@ -49,7 +43,7 @@ export default Vue.extend({
   },
   mounted: function () { },
   methods: {
-    getNextMessageId: function(){
+    getNextMessageId: function () {
       this.messageId++;
       return this.messageId;
     },
@@ -58,7 +52,7 @@ export default Vue.extend({
       console.log(1)
       let _this = this;
       if (this.$store.getters.getChatModus !== 'llm-chat') {
-        console.error('@LLMChat: llm-chat not selected as modus: '+ this.$store.getters.getChatModus);
+        console.error('@LLMChat: llm-chat not selected as modus: ' + this.$store.getters.getChatModus);
         return;
       }
       if (message == null || message.length == 0) {
@@ -81,19 +75,29 @@ export default Vue.extend({
 
       let postData = new FormData();
       postData.append('model', this.pluginSettings.model);
-      postData.append('hostname', this.pluginSettings.hostname);
+      postData.append('hostname', this.pluginSettings.model);
       postData.append('prompt', message);
       //postData.append('coursemoduleid', this.courseModuleID);
       //postData.append('pageinstanceid', this.pageInstanceId);
 
 
-      const base = new URL(M.cfg.wwwroot+"/");
+      const base = new URL(M.cfg.wwwroot + "/");
       const url = new URL("./mod/openchat/llm_stream.php", base);
-      
+
       const response = await fetch(url, {
         method: 'POST',
         body: postData
       });
+
+      /*
+      // Future work: connect to External API. Currently streaming and no-cache is nt supported by the External API.
+      const res = await Communication.webservice("llm_request", {
+          model: this.pluginSettings.model,
+          hostname: this.pluginSettings.model,
+          prompt: message,
+      });
+      const response = await res;
+      */
 
       if (!response.body) {
         console.error("No response body (stream unsupported)");
@@ -110,8 +114,8 @@ export default Vue.extend({
         const { done, value } = await reader.read();
         console.log('inloop 2', done, value)
         if (done) break;
-        
-        
+
+
         const chunk = decoder.decode(value, { stream: true });
         console.log('inloop 3', chunk)
         // Ollama returns JSON per line
@@ -138,10 +142,10 @@ export default Vue.extend({
         }
       }
       Communication.webservice("triggerEvent", {
-          cmid: _this.$store.getters.getCMID,
-          action: "llm_response",
-          value: JSON.stringify(_this.messages[message_pos - 1]),
-        });
+        cmid: _this.$store.getters.getCMID,
+        action: "llm_response",
+        value: JSON.stringify(_this.messages[message_pos - 1]),
+      });
 
       console.log("Final response:", completeText);
       //this.messages[message_pos - 1].message = completeText;
@@ -192,12 +196,12 @@ export default Vue.extend({
 }
 
 .settings-icon {
-    font-size:1.5em; 
-    color:#555;
-    cursor:pointer;
+  font-size: 1.5em;
+  color: #555;
+  cursor: pointer;
 }
 
-.settings-icon:hover{
-    color:#004c97;
+.settings-icon:hover {
+  color: #004c97;
 }
 </style>
