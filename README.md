@@ -92,38 +92,50 @@ Compliance
 **LLM chat**
 As a teacher:
 * Select a model to be used for the document chat
+* API endpoints: 'api/generate', e.g. http://localhost:11434/api/generate, see official [Ollama API documentation](https://github.com/ollama/ollama/blob/main/docs/api.md).
 
 **Document chat (RAG)**
+Students can pose questions in the document chat that are answered based on the documents selected by the teacher.
+
 Settings for teachers:
 * Select and upload a number of PDF files to be index for RAG
 * Chose from the indexed document the ones to be used for the docment chat
 * Select a model to be used for the document chat
+* Used API endpoints at the RAG Webservice, [see documentation](https://github.com/CATALPAresearch/rag-webservice):
+  + /documents/create_index
+  + /documents/delete_index
+  + /documents/documents_by_course
+  + /documents/list
+  + /documents/get_index
+  + /documents/update_index
+  + /llm/models/list
+  + /llm/query
+  + /llm/query_documents
 
-Students can pose questions in the document chat that are answered based on the documents selected by the teacher.
+**Agent Chat**
+(currently under development)
 
 
 ## Roadmap
 **Roadmap**
-* As a student I would like to browse through past chat sessions to see my previous communication with the LLM/RAG.
-* attribute documents and document parts where the information was found
-* As a student I want to optionally select the LLM model to be used for my specific needs.
-* teachers should be able to define prompt templates that encapsulate student LLM requests. These encapsilations can be used to enrich the prompt with additional instructions or to instruct the LLM to withdraw certain information. 
-* As a teacher I need a description about the capabilities, limitations, and use cases of the available models in order provide appropriate apprpriate quality of the generated content. 
+* RAG streaming: As a student I would like to resive the document chat responses as a stream of tokens instead of wainting until the response was completely generated.
+* Persistent chat history: As a student I would like to browse through past chat sessions to see my previous communication with the LLM/RAG.
+* RAG attricbution: As a student I would like refrences to the source of information in the document chat responses.
+* Model seelction: As a student I want to optionally select the LLM model to be used for my specific needs.
+* Prompt Templates: As a teachers I would like to define prompt templates that encapsulate student LLM requests. These encapsilations can be used to enrich the prompt with additional instructions or to instruct the LLM to withdraw certain information. 
+* Model documentation: As a teacher I need a description about the capabilities, limitations, and use cases of the available models in order provide appropriate apprpriate quality of the generated content. 
 
-nth
-* add further language strings and its translations 
-* log user interactions, optional als the text input
-* compatability with LLM servers other then OpenWebUI, e.g. ChatGPT
+nth/nice to have
+* Add further language strings and its translations 
+* Compatability with LLM servers other then Ollama/OpenWebUI, e.g. ChatGPT
 
 
 
 ## How To Use
 
 **Prerequisits**
-LLM-Server:
-
-
-RAG Webservice:
+* [Ollama as LLM-Server](https://github.com/ollama/ollama)
+* [RAG Webservice](https://github.com/CATALPAresearch/rag-webservice.git)
 
 **Setup**
 To clone and run this application, you'll need [Git](https://git-scm.com) and [Node.js](https://nodejs.org/en/download/) (which comes with [npm](http://npmjs.com)) installed on your computer. From your command line:
@@ -190,8 +202,7 @@ Open an [issue](https://github.com/catalparesearch/moodle-mod_openchat/issues) t
 ## Credits
 
 This software uses the following open source packages:
-[vue.js](https://vuejs.org/), 
-[node.js](https://nodejs.org/).
+[vue.js](https://vuejs.org/)
 
 ## Related
 
