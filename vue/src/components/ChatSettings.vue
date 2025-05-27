@@ -38,7 +38,7 @@
             <label for="intro-text">
                 Instruktionen an die Lernenden zur Nutzung des Chats:<br/>
             </label>
-            <textarea ref="intro-text" v-model="intro" @change="updateIntro"></textarea>
+            <textarea class="instruction-text" ref="intro-text" v-model="intro" @change="updateIntro"></textarea>
             <label hidden>
                 Prompt-Template:
                 <textarea v-model="prompt" @change="updatePrompt"></textarea>
@@ -54,8 +54,8 @@
                     <tr>
                         <th>Auswahl</th>
                         <th>Dokument</th>
-                        <th>Aktivitätstyp</th>
-                        <th>Aktionen</th>
+                        <th>Typ</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -63,8 +63,8 @@
                         <td>
                             <input type="checkbox" v-model="doc.selected" />
                         </td>
-                        <td v-if="doc.url==''">{{ doc.filename }}</td>
-                        <td v-if="doc.url!=''">
+                        <td v-if="doc.url==''" class="break">{{ doc.filename }}</td>
+                        <td v-if="doc.url!=''" class="break">
                             <a :href="doc.url">{{ doc.filename }}</a>
                         </td>
                         <td>{{ doc.activity_type }}</td>
@@ -142,12 +142,13 @@ export default {
                 for(var i=0; i < docs.length; i++){
                     console.log(docs[i])
                     this.documents.push({
+                        id: Math.floor(Math.random()*10000),
                         file: '',
                         filename: docs[i].filename,
                         url: docs[i].url,
-                        activity_type: '?',//response.activity_type,
-                        activity_id: '?', //response.activity_id,
-                        document_index: '?', //response.document_index, // needed? FixMe
+                        activity_type: 'pdf',//response.activity_type,
+                        activity_id: '?', // FixMe: response.activity_id,
+                        document_index: '?', //FixMe: response.document_index, // needed? FixMe
                         selected: "selected",
                     });
                 }    
@@ -161,22 +162,23 @@ export default {
             }
             this.document_index = response.document_index;
             this.documents.push({
+                id: Math.floor(Math.random()*10000),
                 file: response.file,
                 filename: response.file.name,
                 url: '',
                 activity_type: response.activity_type,
                 activity_id: response.activity_id,
-                document_index: response.document_index, // needed? FixMe
+                document_index: response.document_index, // FixMe: needed?
                 selected: "selected",
             });
         },
         removeDocument: function (document_id) {
             let _this = this;
-            // remove document from Moodle file storage 
             let doc = this.documents.filter((doc) => doc.id == document_id);
+            console.log('doccc ', doc[0])
             Communication.webservice("document_delete", {
                 cmid: _this.$store.getters.getCMID,
-                filename: doc.file.name
+                filename: doc[0].filename
             });
             this.documents = this.documents.filter((doc) => doc.id !== document_id);
         },
@@ -252,10 +254,17 @@ export default {
 .settings textarea {
     display: block;
     width: 100%;
+    min-height: 40px;
+}
+
+.settings textarea .instruction-text {
+    min-height: 40px;
 }
 
 .document-table {
-    width: 100%;
+    display: block;
+    width: 99%;
+    max-width: 99%;
     border-collapse: collapse;
     margin-top: 10px;
 }
@@ -265,6 +274,12 @@ export default {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: left;
+    line-break: auto;
+}
+
+.document-table td .break {
+    word-wrap:break-word;
+    word-break: break-all;
 }
 
 .document-table th {

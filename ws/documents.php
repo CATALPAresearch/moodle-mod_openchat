@@ -49,6 +49,7 @@ class mod_openchat_documents extends external_api {
 
         $cm = get_coursemodule_from_id('openchat', $cmid, 0, false, MUST_EXIST);
         $context = context_module::instance($cm->id);
+        self::validate_context($context);
         require_capability('mod/openchat:upload', $context);
 
         $decoded = base64_decode($base64file);
@@ -164,7 +165,7 @@ class mod_openchat_documents extends external_api {
     public static function delete_document_parameters() {
         return new external_function_parameters([
             'cmid' => new external_value(PARAM_INT, 'Course module ID'),
-            'filename' => new external_value(PARAM_FILE, 'Filename to delete'),
+            'filename' => new external_value(PARAM_TEXT, 'Filename to delete'),
         ]);
     }
 
@@ -174,28 +175,22 @@ class mod_openchat_documents extends external_api {
     public static function delete_document($cmid, $filename) {
         global $USER;
 
-        $params = self::validate_parameters(self::delete_file_parameters(), [
-            'cmid' => $cmid,
-            'filename' => $filename,
-        ]);
+        $cm = get_coursemodule_from_id('openchat', $cmid, 0, false, MUST_EXIST);
+        $context = \context_module::instance($cm->id);
+        self::validate_context($context);
 
-        $cm = get_coursemodule_from_id('openchat', $params['cmid'], 0, false, MUST_EXIST);
-        $context = context_module::instance($cm->id);
-        require_capability('mod/openchat:uploadfile', $context);
-
-        // Retrieve file from file storage.
         $fs = get_file_storage();
         $files = $fs->get_area_files(
             $context->id,
             'mod_openchat',
-            'document',
-            0,
-            '',
+            'attachment',
+            $cm->instance,
+            'filename', // order by
             false
         );
 
         foreach ($files as $file) {
-            if ($file->get_filename() === $params['filename']) {
+            if ($file->get_filename() === $filename) {
                 $file->delete();
                 return ['success' => true];
             }
