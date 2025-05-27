@@ -61,7 +61,7 @@ export default {
             var activity_id = Math.floor(Math.random() * 30000); // FixMe
             const formData = new FormData();
             const systemContext = this.$store.getters.getSystemContext
-            
+
             formData.append("system", systemContext['systemName']);
             formData.append("course_id", systemContext['courseID']);
             formData.append("activity_type", activity_type);
@@ -69,7 +69,7 @@ export default {
             formData.append("activity_id", activity_id);
             formData.append("file", this.selectedFile);
 
-            const base = new URL(this.$store.getters.getRAGWebserviceHost) 
+            const base = new URL(this.$store.getters.getRAGWebserviceHost)
             const url = new URL("documents/create_index", base);
             console.log('form upload data', formData, url)
             await axios.post(
@@ -87,11 +87,11 @@ export default {
                 console.log("Web Service Response:", this.webServiceResponse);
                 // send received data to parent component
                 this.$emit("document_uploaded", this.webServiceResponse);
-                
+
                 // send file to Moodle after all preprocessing was sucessful
                 // TODO: try to store the resulting vector data as part of the file meta data
                 this.uploadFileToMoodle(this.selectedFile, formData);
-                
+
                 // reset file upload for the next document
                 this.selectedFile = null;
                 this.isProcessing = false;

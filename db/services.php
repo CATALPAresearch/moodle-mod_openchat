@@ -101,4 +101,12 @@ $functions = [
         'ajax'        => true,
         'capabilities' => 'mod/openchat:upload',
     ],
+    'mod_openchat_llm_request' => [
+        'classname'   => 'mod_openchat_llm',
+        'methodname'  => 'llm_request',
+        'classpath'   => 'mod/openchat/ws/llm.php',
+        'description' => 'Send requests to an LLM server or RAG service',
+        'type'        => 'read',
+        'ajax'        => true,
+    ],
 ];

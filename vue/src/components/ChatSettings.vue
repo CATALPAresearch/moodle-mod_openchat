@@ -1,13 +1,8 @@
 <template>
     <div class="settings mb-3">
-       <button
-            type="button"
-            class="btn btn-link settings-icon"
-            @click="$store.commit('toggleShowSettings', 1)"
-            aria-label="Einstellungen schließen"
-            style="float:right; cursor: pointer; font-size:1em; color:#555;"
-            >
-            <font-awesome-icon class="ml-3 mt-1 settings-icon" icon="close" aria-hidden="true"/>
+        <button type="button" class="btn btn-link settings-icon" @click="$store.commit('toggleShowSettings', 1)"
+            aria-label="Einstellungen schließen" style="float: right; cursor: pointer; font-size: 1em; color: #555">
+            <font-awesome-icon class="ml-3 mt-1 settings-icon" icon="close" aria-hidden="true" />
         </button>
         <h3 class="mb-3">Einstellungen</h3>
 
@@ -20,31 +15,31 @@
                     <input type="radio" value="llm-chat" v-model="chatmodus" @change="updateChatModus" />
                     LLM-Chat (Standard)
                 </label>
-                <br>
+                <br />
                 <label>
                     <input type="radio" value="document-chat" v-model="chatmodus" @change="updateChatModus" />
                     Dokumenten-Chat
                 </label>
-                <br>
+                <br />
                 <label>
                     <input type="radio" value="agent-chat" v-model="chatmodus" @change="updateChatModus" />
                     SRL-Chat als Interview-Agent
                 </label>
             </fieldset>
         </div>
-         <!-- Instructions -->
+        <!-- Instructions -->
         <div class="form-group">
             <h4>Instructionen</h4>
             <label for="intro-text">
-                Instruktionen an die Lernenden zur Nutzung des Chats:<br/>
+                Instruktionen an die Lernenden zur Nutzung des Chats:<br />
             </label>
-            <textarea ref="intro-text" v-model="intro" @change="updateIntro"></textarea>
+            <textarea class="instruction-text" ref="intro-text" v-model="intro" @change="updateIntro"></textarea>
             <label hidden>
                 Prompt-Template:
                 <textarea v-model="prompt" @change="updatePrompt"></textarea>
             </label>
         </div>
-        <hr>
+        <hr />
         <!-- Settings for the document chat (RAG) -->
         <div v-if="chatmodus == 'document-chat'">
             <h4 id="doc-table-caption">Dokumente für Dokumenten-Chat</h4>
@@ -54,8 +49,8 @@
                     <tr>
                         <th>Auswahl</th>
                         <th>Dokument</th>
-                        <th>Aktivitätstyp</th>
-                        <th>Aktionen</th>
+                        <th>Typ</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -63,19 +58,15 @@
                         <td>
                             <input type="checkbox" v-model="doc.selected" />
                         </td>
-                        <td v-if="doc.url==''">{{ doc.filename }}</td>
-                        <td v-if="doc.url!=''">
+                        <td v-if="doc.url == ''" class="break">{{ doc.filename }}</td>
+                        <td v-if="doc.url != ''" class="break">
                             <a :href="doc.url">{{ doc.filename }}</a>
                         </td>
                         <td>{{ doc.activity_type }}</td>
                         <td>
-                            <button
-                                type="button"
-                                class="btn btn-link delete-icon"
-                                @click="removeDocument(doc.id)"
-                                :aria-label="'Dokument'+ doc.file.name + 'löschen'"
-                                >
-                                <font-awesome-icon icon="trash" aria-hidden="true"/>
+                            <button type="button" class="btn btn-link delete-icon" @click="removeDocument(doc.id)"
+                                :aria-label="'Dokument' + doc.file.name + 'löschen'">
+                                <font-awesome-icon icon="trash" aria-hidden="true" />
                             </button>
                         </td>
                     </tr>
@@ -84,14 +75,16 @@
 
             <div class="mt-3">
                 <RAGupload @document_uploaded="addDocument"></RAGupload>
-                <span style="background-color: red" aria-live="assertive">{{ error_msg }}</span>
+                <span style="background-color: red" aria-live="assertive">{{
+                    error_msg
+                    }}</span>
             </div>
             <div hidden class="mt-3">
                 TODO: Ressource aus dem Kurs als Dokument hinzufügen; [todo: page,
                 longpage, wiki, forum, assign]
             </div>
         </div>
-        <hr>
+        <hr />
         <!-- Standard settings for all chat modi -->
         <div class="form-group">
             <h4>Verwendetes Sprachmodel</h4>
@@ -109,7 +102,7 @@
 <script>
 import RAGupload from "./RAGupload.vue";
 import Communication from "../classes/communication";
-import { mapGetters } from 'vuex'
+import { mapGetters } from "vuex";
 
 export default {
     name: "RAGChatSettings",
@@ -127,32 +120,33 @@ export default {
         this.prompt = this.$store.getters.getPromptTemplate;
         this.model = this.$store.getters.getModel;
         this.chatmodus = this.$store.getters.getChatModus;
-        console.log('this.chatmodus', this.chatmodus)
+        console.log("this.chatmodus", this.chatmodus);
         this.loadDocuments();
     },
 
     methods: {
-        async loadDocuments(){
+        async loadDocuments() {
             const response = await Communication.webservice("document_list", {
-                    cmid: this.$store.getters.getCMID
+                cmid: this.$store.getters.getCMID,
+            });
+            console.log("start document_list");
+            const docs = await response;
+            console.log("loaded_docs: ", docs);
+            for (var i = 0; i < docs.length; i++) {
+                console.log(docs[i]);
+                this.documents.push({
+                    id: Math.floor(Math.random() * 10000),
+                    file: "",
+                    filename: docs[i].filename,
+                    url: docs[i].url,
+                    activity_type: "pdf", //response.activity_type,
+                    activity_id: "?", // FixMe: response.activity_id,
+                    document_index: "?", //FixMe: response.document_index, // needed? FixMe
+                    selected: "selected",
                 });
-                console.log('start document_list')
-                const docs = await response;
-                console.log('loaded_docs: ', docs);
-                for(var i=0; i < docs.length; i++){
-                    console.log(docs[i])
-                    this.documents.push({
-                        file: '',
-                        filename: docs[i].filename,
-                        url: docs[i].url,
-                        activity_type: '?',//response.activity_type,
-                        activity_id: '?', //response.activity_id,
-                        document_index: '?', //response.document_index, // needed? FixMe
-                        selected: "selected",
-                    });
-                }    
+            }
         },
-        
+
         addDocument: function (response) {
             console.log("handle adddocument", response);
             if (response.error) {
@@ -161,22 +155,23 @@ export default {
             }
             this.document_index = response.document_index;
             this.documents.push({
+                id: Math.floor(Math.random() * 10000),
                 file: response.file,
                 filename: response.file.name,
-                url: '',
+                url: "",
                 activity_type: response.activity_type,
                 activity_id: response.activity_id,
-                document_index: response.document_index, // needed? FixMe
+                document_index: response.document_index, // FixMe: needed?
                 selected: "selected",
             });
         },
         removeDocument: function (document_id) {
             let _this = this;
-            // remove document from Moodle file storage 
             let doc = this.documents.filter((doc) => doc.id == document_id);
+            console.log("doccc ", doc[0]);
             Communication.webservice("document_delete", {
                 cmid: _this.$store.getters.getCMID,
-                filename: doc.file.name
+                filename: doc[0].filename,
             });
             this.documents = this.documents.filter((doc) => doc.id !== document_id);
         },
@@ -197,19 +192,24 @@ export default {
             this.$store.commit("setPromptTemplate", this.prompt);
             this.$store.dispatch("updatePluginSettings");
         },
-        fetchUploadedFiles: async function(cmid) {
-            const response = await fetch(M.cfg.wwwroot + '/lib/ajax/service.php?sesskey=' + M.cfg.sesskey, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify([{
-                methodname: 'mod_openchat_list_files',
-                args: { cmid }
-                }])
-            });
+        fetchUploadedFiles: async function (cmid) {
+            const response = await fetch(
+                M.cfg.wwwroot + "/lib/ajax/service.php?sesskey=" + M.cfg.sesskey,
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify([
+                        {
+                            methodname: "mod_openchat_list_files",
+                            args: { cmid },
+                        },
+                    ]),
+                }
+            );
 
             const result = await response.json();
             return result[0].data || [];
-        }
+        },
     },
 
     computed: {
@@ -252,10 +252,17 @@ export default {
 .settings textarea {
     display: block;
     width: 100%;
+    min-height: 40px;
+}
+
+.settings textarea .instruction-text {
+    min-height: 40px;
 }
 
 .document-table {
-    width: 100%;
+    display: block;
+    width: 99%;
+    max-width: 99%;
     border-collapse: collapse;
     margin-top: 10px;
 }
@@ -265,6 +272,12 @@ export default {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: left;
+    line-break: auto;
+}
+
+.document-table td .break {
+    word-wrap: break-word;
+    word-break: break-all;
 }
 
 .document-table th {
