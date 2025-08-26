@@ -88,7 +88,7 @@ export default Vue.extend({
             const base = new URL(this.$store.getters.getRAGWebserviceHost);
             const url = new URL("llm/query_documents", base);
             let payload = {
-                "model": this.model(),
+                "model": this.model,
                 "filter": this.updateDocumentFilter(),
                 "prompt": message,
             };

@@ -32,9 +32,20 @@ header('Content-Type: text/event-stream');
 header('Cache-Control: no-cache');
 header('Connection: keep-alive');
 
+//require('config.php');
+//require_once($CFG->libdir.'/formslib.php');
+//require_once($CFG->libdir.'/adminlib.php');
+
+/*
 $model = required_param('model', 'phi3:latest', PARAM_TEXT);
 $prompt = required_param('prompt', "Why didn't you send a prompt?", PARAM_TEXT);
 $hostname = optional_param('hostname', 'http://localhost:11434/', PARAM_URL);
+*/
+
+$model = 'phi3:latest';
+$prompt = "Why didn't you send a prompt?";
+$hostname = 'http://localhost:11434/';
+
 
 $apikey = "";
 

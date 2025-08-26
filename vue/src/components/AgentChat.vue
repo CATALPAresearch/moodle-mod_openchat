@@ -98,6 +98,10 @@ export default {
 };
 </script>
 
+
+
+<style scoped>
+
 .sr-only {
 position: absolute;
 left: -9999px;
@@ -106,7 +110,6 @@ height: 1px;
 overflow: hidden;
 }
 
-<style scoped>
 .chat-widget {
     max-width: 400px;
     margin: auto;

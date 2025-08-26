@@ -1,6 +1,6 @@
 {
   "name": "moodle-mod_openchat",
-  "description": "",
+  "description": "mod_openchat is a ready to use Moodle activity plugin that enables users to chat with an open-source large language model including document chat based on retrieval augmented generation.",
   "version": "1.0.0",
   "author": "Niels Seidel <niels.seidel@fernuni-hagen.de",
   "license": "GPL-3.0-only",
