@@ -1,79 +1,104 @@
 <template>
     <div id="container" class="content" role="main">
-        <div id="chat">
-            <div class="col-6">
-                <div class="box" v-if="is_loading" role="status" aria-live="polite">
-                    <i class="fa fa-spin" aria-hidden="true" />
-                    <span class="sr-only">Loading...</span>
-                </div>
+        <div class="chat-header mb-3 w100">
+            <h3 class="d-flex justify-content-betweenx xalign-items-center mb-3">
+                <span id="chat-title">Agent-Chat</span>
+                <button @click="$store.commit('toggleShowSettings', 1)" class="btn btn-link settings-icon-button"
+                    aria-controls="settings-panel" :aria-expanded="$store.getters.showSettings.toString()"
+                    aria-label="Einstellungen öffnen oder schließen" title="Einstellungen" style="margin-top:0px;">
+                    <font-awesome-icon class="settings-icon" icon="cog" aria-hidden="true" />
+                </button>
+            </h3>
+            <div id="intro">
+                {{ $store.getters.getPluginSettings.intro }}
             </div>
-            <button v-if="!chatStarted" @click="startChat" class="btn btn-primary start-btn">
-                Start Chat
-            </button>
-
-            <div v-if="chatStarted" class="chat-container">
-                <div class="messages" role="log" aria-live="polite" aria-relevant="additions" aria-atomic="false">
-                    <div v-for="(message, index) in messages" :key="index"
-                        :class="{ 'user-message': message.user, 'server-message': !message.user, }"
-                        :aria-label="message.user ? 'Your message' : 'Message from the LLM'" role="article">
-                        {{ message.text }}
-                    </div>
-                </div>
-
-                <form @submit.prevent="sendMessage" class="chat-input">
-                    <label for="chat-input" class="sr-only">Type your message</label>
-                    <input id="chat-input" v-model="userInput" placeholder="Type a message..."
-                        aria-label="Message input field" :disabled="is_loading"
-                        :aria-disabled="is_loading" />
-                    <button type="submit" aria-label="Send message">Send</button>
-                </form>
-            </div>
+            <ChatSettings v-if="$store.getters.showSettings" :documents="[]" />
         </div>
+
+        <button v-if="!chatStarted" @click="startChat" class="btn btn-primary start-btn">
+            Start Chat
+        </button>
+        <ChatUI :messages="messages" @requestChatResponse="requestAgentChat" aria-labelledby="chat-title" />
     </div>
 </template>
 
 <script lang="ts">
 import axios from "axios";
+import Vue from "vue";
+//import { mapGetters } from 'vuex'
+import ChatSettings from "./ChatSettings.vue";
+import ChatUI from "./ChatUI.vue";
+import Communication from "../classes/communication";
 
-export default {
+
+export default Vue.extend({
+    name: "AgentChat",
+    components: {
+        ChatSettings: ChatSettings,
+        ChatUI: ChatUI
+    },
     data() {
         return {
+            messages: [],
+            messageId: 0,
+            error_msg: '',
             is_loading: false,
             host: 'http://localhost:5000',
             userid: 123, // # FixMe
             chatStarted: false,
             userInput: "",
-            messages: [],
         };
     },
+
     methods: {
-        async startChat() {
-            this.is_loading = true;
+        getNextMessageId: function () {
+            this.messageId++;
+            return this.messageId;
+        },
+
+        startChat: async function () {
+            console.log('Started Chat');
+            let _this = this;
             // curl -X POST http://localhost:5000/startConversation -H "Content-Type: application/json" -d '{ "language": "en", "client": "discord", "userid": "none"}'
             await axios.post(
                 this.host + "/startConversation",
                 { language: "en", client: "discord", userid: this.userid }
             ).then(response => {
-                this.is_loading = false;
+                _this.is_loading = false;
                 console.log('/startConversation: ', response);
-                this.messages.push({
-                    text: response.data || "Chat started!",
-                    user: 123,
+                _this.messages.push({
+                    message: response.data || "Chat started!",
+                    author: 'bot',
+                    id: _this.getNextMessageId()
                 });
-                this.chatStarted = true;
+                _this.chatStarted = true;
             }).catch(error => {
-                this.is_loading = false;
+                _this.is_loading = false;
                 console.error("Error starting chat:", error);
             });
         },
 
 
-        async sendMessage() {
-            if (!this.userInput.trim()) return;
+        requestAgentChat: async function (message) {
+            if (this.$store.getters.getChatModus !== 'agent-chat') {
+                return;
+            }
+
             this.is_loading = true;
-            const message = this.userInput.trim();
-            this.messages.push({ text: message, user: true });
-            this.userInput = "";
+
+            //@ts-ignore
+            let new_message = { author: "user", message: message, id: this.getNextMessageId() };
+            this.messages.push(new_message);
+            Communication.webservice("triggerEvent", {
+                cmid: this.$store.getters.getCMID,
+                action: "agent_request",
+                value: JSON.stringify(new_message),
+            });
+            //@ts-ignore
+            //let message_pos = this.messages.push({ author: "bot", message: "", id: this.getNextMessageId() });
+
+            // default
+            //const base = new URL(this.$store.getters.getRAGWebserviceHost);
 
             await axios.post(
                 this.host + "/reply", {
@@ -83,31 +108,32 @@ export default {
             }).then(response => {
                 this.is_loading = false;
                 console.log('/reply: ', response);
-                this.messages.push({ text: response.data, user: false });
+                new_message = { author: "bot", message: response.data, id: this.getNextMessageId() };
+                this.messages.push(new_message);
                 this.wait_video_generation = false
             }).catch(error => {
                 this.is_loading = false;
                 console.error("Error sending message:", error);
                 this.messages.push({
-                    text: "Error: Unable to get a response.",
-                    user: false,
+                    message: "Error: Unable to get a response.",
+                    author: "bot",
+                    id: this.getNextMessageId()
                 });
             });
         },
     },
-};
+});
 </script>
 
 
 
 <style scoped>
-
 .sr-only {
-position: absolute;
-left: -9999px;
-width: 1px;
-height: 1px;
-overflow: hidden;
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
 }
 
 .chat-widget {
