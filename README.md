@@ -118,16 +118,23 @@ Settings for teachers:
 
 ## Roadmap
 **Roadmap**
+General:
+* Prompt Templates: As a teachers I would like to define prompt templates that encapsulate student LLM requests. These encapsilations can be used to enrich the prompt with additional instructions or to instruct the LLM to withdraw certain information. 
+* Model cards: As a teacher I need a description about the capabilities, limitations, and use cases of the available models in order provide appropriate apprpriate quality of the generated content. 
+
+RAG
 * RAG streaming: As a student I would like to resive the document chat responses as a stream of tokens instead of wainting until the response was completely generated.
 * Persistent chat history: As a student I would like to browse through past chat sessions to see my previous communication with the LLM/RAG.
-* RAG attricbution: As a student I would like refrences to the source of information in the document chat responses.
-* Model seelction: As a student I want to optionally select the LLM model to be used for my specific needs.
-* Prompt Templates: As a teachers I would like to define prompt templates that encapsulate student LLM requests. These encapsilations can be used to enrich the prompt with additional instructions or to instruct the LLM to withdraw certain information. 
-* Model documentation: As a teacher I need a description about the capabilities, limitations, and use cases of the available models in order provide appropriate apprpriate quality of the generated content. 
+* RAG attribution: As a student I would like refrences to the source of information in the document chat responses.
+
+Agent Chat: 
+  - Include dialoge templates like select menues, small visualizations, tables, lists, etc.
+  - As a student I would like to know how the agents works and what personal data is processed.
 
 nth/nice to have
 * Add further language strings and its translations 
 * Compatability with LLM servers other then Ollama/OpenWebUI, e.g. ChatGPT
+* Model seelction: As a student I want to optionally select the LLM model to be used for my specific needs.
 
 
 

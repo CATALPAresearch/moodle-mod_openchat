@@ -155,6 +155,9 @@ export const store = new Vuex.Store({
     },
     getInformedConsentAgreement: function (state) {
       return state.informedConsentAgreement;
+    },
+    getUser: function(state){
+      return state.user.userId;
     }
   },
   actions: {

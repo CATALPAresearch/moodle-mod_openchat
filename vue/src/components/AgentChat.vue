@@ -44,7 +44,6 @@ export default Vue.extend({
             error_msg: '',
             is_loading: false,
             host: 'http://localhost:5000',
-            userid: 123, // # FixMe
             chatStarted: false,
             userInput: "",
         };
@@ -62,7 +61,7 @@ export default Vue.extend({
             // curl -X POST http://localhost:5000/startConversation -H "Content-Type: application/json" -d '{ "language": "en", "client": "discord", "userid": "none"}'
             await axios.post(
                 this.host + "/startConversation",
-                { language: "en", client: "discord", userid: this.userid }
+                { language: "en", client: "discord", userid: this.$store.getters.getUser }
             ).then(response => {
                 _this.is_loading = false;
                 console.log('/startConversation: ', response);
@@ -94,17 +93,15 @@ export default Vue.extend({
                 action: "agent_request",
                 value: JSON.stringify(new_message),
             });
-            //@ts-ignore
-            //let message_pos = this.messages.push({ author: "bot", message: "", id: this.getNextMessageId() });
-
-            // default
+            
+            // TODO: let admin define the url of the agent webservice
             //const base = new URL(this.$store.getters.getRAGWebserviceHost);
 
             await axios.post(
                 this.host + "/reply", {
                 message: message,
                 client: "discord",
-                userid: this.userid,
+                userid: this.$store.getters.getUser,
             }).then(response => {
                 this.is_loading = false;
                 console.log('/reply: ', response);
